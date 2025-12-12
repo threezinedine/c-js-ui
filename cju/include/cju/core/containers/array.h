@@ -95,7 +95,7 @@ void cuArrayFree(CuArray* pArray);
 	} while (CU_FALSE)
 
 #define CU_ARRAY_GET(T, vec, index)                                                                                    \
-	((T*)((u8*)(vec)->pData + ((index) * sizeof(T))));                                                                 \
+	((T*)(cuArrayGet((vec), (index))));                                                                                \
 	do                                                                                                                 \
 	{                                                                                                                  \
 		CU_ARRAY_TYPE_ASSERT(T, vec);                                                                                  \

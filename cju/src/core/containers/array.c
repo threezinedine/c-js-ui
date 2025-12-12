@@ -49,7 +49,14 @@ void cuArrayPushBack(CuArray* pArray, const void* pElement)
 void* cuArrayGet(CuArray* pArray, u32 index)
 {
 	CU_ASSERT(pArray != CU_NULL);
-	CU_ASSERT(index < pArray->count);
+
+	if (index >= pArray->count)
+	{
+		CU_RAISE_EXCEPTION(CU_EXCEPTION_CODE_INDEX_OUT_OF_BOUNDS,
+						   "Index %u is out of bounds for array of size %u",
+						   index,
+						   pArray->count);
+	}
 
 	return (u8*)pArray->pData + (index * pArray->elementSize);
 }

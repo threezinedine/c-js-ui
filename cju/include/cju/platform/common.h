@@ -81,4 +81,5 @@ typedef u8 b8;
 #define CU_UNUSED(var) (void)(var)
 
 #include "console.h"
+#include "exeptions.h"
 #include "memory.h"

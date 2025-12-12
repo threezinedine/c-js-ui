@@ -53,3 +53,15 @@ TEST(ArrayTest, GetIndex)
 
 	CU_ARRAY_FREE(int, pArray);
 }
+
+TEST(ArrayTest, GetIndexOutOfBounds)
+{
+	CuArray* pArray = CU_ARRAY_INIT(int, 2);
+
+	CU_ARRAY_PUSH_BACK(int, pArray, 42);
+
+	EXPECT_EXIT(
+		{ CU_ARRAY_GET(int, pArray, 1); }, ::testing::ExitedWithCode(CU_EXCEPTION_CODE_INDEX_OUT_OF_BOUNDS), "");
+
+	CU_ARRAY_FREE(int, pArray);
+}
