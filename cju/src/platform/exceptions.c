@@ -19,6 +19,7 @@ const char* cuConvertExceptionCodeToString(CuExceptionCode code)
 
 void cuRaiseException(CuExceptionCode code, const char* message, const char* file, u32 line)
 {
+#if !CU_TESTING
 	// For now, just print the exception details and abort.
 	cuConsoleSetColor(CU_CONSOLE_COLOR_RED);
 	cuPrintLnFormat("Exception raised: code=%s, message=%s, file=%s, line=%u",
@@ -28,5 +29,6 @@ void cuRaiseException(CuExceptionCode code, const char* message, const char* fil
 					line);
 	cuConsoleSetColor(CU_CONSOLE_COLOR_RESET);
 	// In a real implementation, you might want to log this or handle it differently.
+#endif
 	exit(code);
 }
