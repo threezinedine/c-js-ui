@@ -146,3 +146,110 @@ TEST(ArrayTest, InsertAtTheBegging)
 
 	CU_ARRAY_FREE(int, pArray);
 }
+
+TEST(ArrayTest, InsertAtTheMiddle)
+{
+	CuArray* pArray = CU_ARRAY_INIT(int, 2);
+
+	CU_ARRAY_PUSH_BACK(int, pArray, 1);
+	CU_ARRAY_PUSH_BACK(int, pArray, 3);
+
+	CU_ARRAY_INSERT(int, pArray, 1, 2);
+
+	EXPECT_EQ(pArray->count, 3);
+
+	int* secondValue = CU_ARRAY_GET(int, pArray, 1);
+	EXPECT_EQ(*secondValue, 2);
+
+	CU_ARRAY_FREE(int, pArray);
+}
+
+TEST(ArrayTest, InsertAtTheEnd)
+{
+	CuArray* pArray = CU_ARRAY_INIT(int, 2);
+
+	CU_ARRAY_PUSH_BACK(int, pArray, 1);
+	CU_ARRAY_PUSH_BACK(int, pArray, 2);
+
+	CU_ARRAY_INSERT(int, pArray, 2, 3);
+
+	EXPECT_EQ(pArray->count, 3);
+
+	int* thirdValue = CU_ARRAY_GET(int, pArray, 2);
+	EXPECT_EQ(*thirdValue, 3);
+
+	CU_ARRAY_FREE(int, pArray);
+}
+
+TEST(ArrayTest, InsertAtOutOfBoundsIndex)
+{
+	CuArray* pArray = CU_ARRAY_INIT(int, 2);
+
+	CU_ARRAY_PUSH_BACK(int, pArray, 1);
+	CU_ARRAY_PUSH_BACK(int, pArray, 2);
+
+	EXPECT_EXIT(
+		{ CU_ARRAY_INSERT(int, pArray, 3, 3); }, ::testing::ExitedWithCode(CU_EXCEPTION_CODE_INDEX_OUT_OF_BOUNDS), "");
+
+	CU_ARRAY_FREE(int, pArray);
+}
+
+TEST(ArrayTest, RemoveAtBegging)
+{
+	CuArray* pArray = CU_ARRAY_INIT(int, 2);
+
+	CU_ARRAY_PUSH_BACK(int, pArray, 1);
+	CU_ARRAY_PUSH_BACK(int, pArray, 2);
+	CU_ARRAY_PUSH_BACK(int, pArray, 3);
+
+	CU_ARRAY_REMOVE_AT(int, pArray, 0);
+
+	EXPECT_EQ(pArray->count, 2);
+
+	int* secondValue = CU_ARRAY_GET(int, pArray, 1);
+	EXPECT_EQ(*secondValue, 3);
+
+	int* firstValue = CU_ARRAY_GET(int, pArray, 0);
+	EXPECT_EQ(*firstValue, 2);
+
+	CU_ARRAY_FREE(int, pArray);
+}
+
+TEST(ArrayTest, RemoveAtMiddle)
+{
+	CuArray* pArray = CU_ARRAY_INIT(int, 2);
+
+	CU_ARRAY_PUSH_BACK(int, pArray, 1);
+	CU_ARRAY_PUSH_BACK(int, pArray, 2);
+	CU_ARRAY_PUSH_BACK(int, pArray, 3);
+
+	CU_ARRAY_REMOVE_AT(int, pArray, 1);
+
+	EXPECT_EQ(pArray->count, 2);
+
+	int* secondValue = CU_ARRAY_GET(int, pArray, 1);
+	EXPECT_EQ(*secondValue, 3);
+
+	CU_ARRAY_FREE(int, pArray);
+}
+
+TEST(ArrayTest, RemoveAtEnd)
+{
+	CuArray* pArray = CU_ARRAY_INIT(int, 2);
+
+	CU_ARRAY_PUSH_BACK(int, pArray, 1);
+	CU_ARRAY_PUSH_BACK(int, pArray, 2);
+	CU_ARRAY_PUSH_BACK(int, pArray, 3);
+
+	CU_ARRAY_REMOVE_AT(int, pArray, 2);
+
+	EXPECT_EQ(pArray->count, 2);
+
+	int* secondValue = CU_ARRAY_GET(int, pArray, 1);
+	EXPECT_EQ(*secondValue, 2);
+
+	int* firstValue = CU_ARRAY_GET(int, pArray, 0);
+	EXPECT_EQ(*firstValue, 1);
+
+	CU_ARRAY_FREE(int, pArray);
+}
