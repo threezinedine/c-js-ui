@@ -50,6 +50,7 @@ void cuArrayFree(CuArray* pArray);
  */
 #define CU_ARRAY_INIT(T, cap) (cuArrayInit(sizeof(T), (cap)))
 
+#if CU_DEBUG
 /**
  * Macro to resize a typed array to a new capacity.
  *
@@ -57,12 +58,29 @@ void cuArrayFree(CuArray* pArray);
  * @param vec A pointer to the CuArray to resize.
  * @param newCap The new capacity for the array.
  */
+#define CU_ARRAY_RESIZE(T, vec, newCap)                                                                                \
+	do                                                                                                                 \
+	{                                                                                                                  \
+		CU_ASSERT(sizeof(T) == (vec)->elementSize);                                                                    \
+		cuArrayResize((CuArray*)(vec), (newCap));                                                                      \
+	} while (0)
+#else
 #define CU_ARRAY_RESIZE(T, vec, newCap) (cuArrayResize((CuArray*)(vec), (newCap)))
+#endif
 
+#if CU_DEBUG
 /**
  * Macro to free a typed array.
  *
  * @param T The type of elements in the array.
  * @param vec A pointer to the CuArray to free.
  */
+#define CU_ARRAY_FREE(T, vec)                                                                                          \
+	do                                                                                                                 \
+	{                                                                                                                  \
+		CU_ASSERT(sizeof(T) == (vec)->elementSize);                                                                    \
+		cuArrayFree((CuArray*)(vec));                                                                                  \
+	} while (0)
+#else
 #define CU_ARRAY_FREE(T, vec) (cuArrayFree(vec))
+#endif
