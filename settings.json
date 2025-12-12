@@ -35,6 +35,11 @@
 					"windowsPath": "{{ BUILD_DIR }}/examples/platforms/{{ BUILD_TYPE|capitalize }}/time.exe"
 				},
 				{
+					"name": "logger",
+					"linuxPath": "{{ BUILD_DIR }}/examples/core/logger",
+					"windowsPath": "{{ BUILD_DIR }}/examples/core/{{ BUILD_TYPE|capitalize }}/logger.exe"
+				},
+				{
 					"name": "memory",
 					"linuxPath": "{{ BUILD_DIR }}/examples/platforms/memory",
 					"windowsPath": "{{ BUILD_DIR }}/examples/platforms/{{ BUILD_TYPE|capitalize }}/memory.exe"

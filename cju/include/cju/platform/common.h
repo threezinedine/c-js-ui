@@ -33,6 +33,8 @@ typedef u8 b8;
 #error "Platform not supported"
 #endif
 
+#define CU_BUFFER_SIZE 1024
+
 #if CU_DEBUG
 #define CU_ASSERT(cond)                                                                                                \
 	do                                                                                                                 \
@@ -52,16 +54,26 @@ typedef u8 b8;
 		if (!(cond))                                                                                                   \
 		{                                                                                                              \
 			cuConsoleSetColor(CU_CONSOLE_COLOR_RED);                                                                   \
-			char buffer[512];                                                                                          \
+			char buffer[CU_BUFFER_SIZE];                                                                               \
 			cuBufferedString(buffer, sizeof(buffer), msg, ##__VA_ARGS__);                                              \
 			cuPrintFormat("Assertion failed: message: %s, file %s, line %d\n", buffer, __FILE__, __LINE__);            \
 			cuConsoleSetColor(CU_CONSOLE_COLOR_RESET);                                                                 \
 			debugbreak();                                                                                              \
 		}                                                                                                              \
 	} while (CU_FALSE)
+
+#define CU_UNREACHABLE()                                                                                               \
+	do                                                                                                                 \
+	{                                                                                                                  \
+		cuConsoleSetColor(CU_CONSOLE_COLOR_RED);                                                                       \
+		cuPrintFormat("Unreachable code reached: file %s, line %d\n", __FILE__, __LINE__);                             \
+		cuConsoleSetColor(CU_CONSOLE_COLOR_RESET);                                                                     \
+		debugbreak();                                                                                                  \
+	} while (CU_FALSE)
 #else
 #define CU_ASSERT(cond)
 #define CU_ASSERT_MSG(cond, msg)
+#define CU_UNREACHABLE()
 #endif
 
 #define CU_NOT_IMPLEMENTED() CU_ASSERT_MSG(CU_FALSE, "Method %s not yet implemented", __FUNCTION__)

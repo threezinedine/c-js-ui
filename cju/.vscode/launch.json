@@ -9,6 +9,14 @@
 			"cwd": "${workspaceRoot}/build/linux/debug/examples/platforms"
 		},
 		{
+			"name": "Example: Logger",
+			"type": "cppdbg",
+			"request": "launch",
+			"preLaunchTask": "Build",
+			"program": "${workspaceRoot}/build/linux/debug/examples/core/logger",
+			"cwd": "${workspaceRoot}/build/linux/debug/examples/core"
+		},
+		{
 			"name": "Test: CJU",
 			"type": "cppdbg",
 			"request": "launch",
