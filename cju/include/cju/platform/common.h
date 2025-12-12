@@ -24,6 +24,15 @@ typedef u8 b8;
 #define CU_KB(size) ((size) * 1024)
 #define CU_MB(size) (CU_KB(size) * 1024)
 
+#if CU_PLATFORM_WINDOWS
+#error "Windows platform is not yet supported"
+#elif CU_PLATFORM_UNIX || CU_PLATFORM_WEB
+#include <signal.h>
+#define debugbreak() __builtin_trap()
+#else
+#error "Platform not supported"
+#endif
+
 #if CU_DEBUG
 #define CU_ASSERT(cond)                                                                                                \
 	do                                                                                                                 \
@@ -33,6 +42,7 @@ typedef u8 b8;
 			cuConsoleSetColor(CU_CONSOLE_COLOR_RED);                                                                   \
 			cuConsolePrintFormat("Assertion failed: %s, file %s, line %d\n", #cond, __FILE__, __LINE__);               \
 			cuConsoleSetColor(CU_CONSOLE_COLOR_RESET);                                                                 \
+			debugbreak();                                                                                              \
 		}                                                                                                              \
 	} while (CU_FALSE)
 
@@ -46,6 +56,7 @@ typedef u8 b8;
 			cuBufferedString(buffer, sizeof(buffer), msg, ##__VA_ARGS__);                                              \
 			cuConsolePrintFormat("Assertion failed: message: %s, file %s, line %d\n", buffer, __FILE__, __LINE__);     \
 			cuConsoleSetColor(CU_CONSOLE_COLOR_RESET);                                                                 \
+			debugbreak();                                                                                              \
 		}                                                                                                              \
 	} while (CU_FALSE)
 #else
@@ -58,3 +69,4 @@ typedef u8 b8;
 #define CU_UNUSED(var) (void)(var)
 
 #include "console.h"
+#include "memory.h"

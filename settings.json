@@ -23,6 +23,11 @@
 					"name": "console",
 					"linuxPath": "{{ BUILD_DIR }}/examples/platforms/console",
 					"windowsPath": "{{ BUILD_DIR }}/examples/platforms/{{ BUILD_TYPE|capitalize }}/console.exe"
+				},
+				{
+					"name": "memory",
+					"linuxPath": "{{ BUILD_DIR }}/examples/platforms/memory",
+					"windowsPath": "{{ BUILD_DIR }}/examples/platforms/{{ BUILD_TYPE|capitalize }}/memory.exe"
 				}
 			]
 		}

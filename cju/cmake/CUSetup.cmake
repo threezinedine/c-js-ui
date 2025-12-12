@@ -45,6 +45,14 @@ macro(CU_Setup)
     set(COMMON_DEFINITIONS "")
     CU_PlatformDetection()
 
+    option(CMAKE_BUILD_TYPE "Build type" Debug)
+
+    if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+        list(APPEND COMMON_DEFINITIONS CU_DEBUG=1)
+    else()
+        list(APPEND COMMON_DEFINITIONS CU_RELEASE=1)
+    endif()
+
     foreach(OPTION ${CU_OPTIONS})
         if(${OPTION})
             list(APPEND COMMON_DEFINITIONS ${OPTION}=1)

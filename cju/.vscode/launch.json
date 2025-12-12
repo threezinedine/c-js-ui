@@ -1,0 +1,12 @@
+{
+	"configurations": [
+		{
+			"name": "Example: Memory",
+			"type": "cppdbg",
+			"request": "launch",
+			"preLaunchTask": "Build",
+			"program": "${workspaceRoot}/build/linux/debug/examples/platforms/memory",
+			"cwd": "${workspaceRoot}/build/linux/debug/examples/platforms"
+		}
+	]
+}
