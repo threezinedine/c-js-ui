@@ -53,17 +53,17 @@ void cuConsoleSetColor(CuConsoleColor color)
 #endif
 }
 
-void cuConsolePrint(const char* message)
+void cuPrint(const char* message)
 {
 	printf("%s", message);
 }
 
-void cuConsolePrintLn(const char* message)
+void cuPrintLn(const char* message)
 {
 	printf("%s\n", message);
 }
 
-void cuConsolePrintFormat(const char* format, ...)
+void cuPrintFormat(const char* format, ...)
 {
 	va_list args;
 	va_start(args, format);
@@ -71,7 +71,7 @@ void cuConsolePrintFormat(const char* format, ...)
 	va_end(args);
 }
 
-void cuConsolePrintLnFormat(const char* format, ...)
+void cuPrintLnFormat(const char* format, ...)
 {
 	va_list args;
 	va_start(args, format);

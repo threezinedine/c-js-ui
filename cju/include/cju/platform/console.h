@@ -43,14 +43,14 @@ void cuConsoleSetColor(CuConsoleColor color);
  *
  * @param message The message to print.
  */
-void cuConsolePrint(const char* message);
+void cuPrint(const char* message);
 
 /**
  * Prints a message to the console followed by a newline.
  *
  * @param message The message to print.
  */
-void cuConsolePrintLn(const char* message);
+void cuPrintLn(const char* message);
 
 /**
  * Prints a formatted message to the console.
@@ -58,7 +58,7 @@ void cuConsolePrintLn(const char* message);
  * @param format The format string.
  * @param ... The format arguments.
  */
-void cuConsolePrintFormat(const char* format, ...);
+void cuPrintFormat(const char* format, ...);
 
 /**
  * Prints a formatted message to the console followed by a newline.
@@ -66,7 +66,7 @@ void cuConsolePrintFormat(const char* format, ...);
  * @param format The format string.
  * @param ... The format arguments.
  */
-void cuConsolePrintLnFormat(const char* format, ...);
+void cuPrintLnFormat(const char* format, ...);
 
 /**
  * Buffers a formatted string into the provided buffer.

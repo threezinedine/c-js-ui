@@ -33,3 +33,23 @@ TEST(ArrayTest, ResizeWithLargerCapacity)
 
 	CU_ARRAY_FREE(int, pArray);
 }
+
+TEST(ArrayTest, PushBack)
+{
+	CuArray* pArray = CU_ARRAY_INIT(int, 2);
+
+	CU_ARRAY_PUSH_BACK(int, pArray, 1);
+
+	CU_ARRAY_FREE(int, pArray);
+}
+
+TEST(ArrayTest, GetIndex)
+{
+	CuArray* pArray = CU_ARRAY_INIT(int, 2);
+
+	CU_ARRAY_PUSH_BACK(int, pArray, 42);
+	int* value = CU_ARRAY_GET(int, pArray, 0);
+	EXPECT_EQ(*value, 42);
+
+	CU_ARRAY_FREE(int, pArray);
+}

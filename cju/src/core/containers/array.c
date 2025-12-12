@@ -30,6 +30,30 @@ void cuArrayResize(CuArray* pArray, u32 newCapacity)
 	pArray->capacity = newCapacity;
 }
 
+void cuArrayPushBack(CuArray* pArray, const void* pElement)
+{
+	CU_ASSERT(pArray != CU_NULL);
+	CU_ASSERT(pElement != CU_NULL);
+
+	if (pArray->count >= pArray->capacity)
+	{
+		u32 newCapacity = pArray->capacity == 0 ? 1 : pArray->capacity * 2;
+		cuArrayResize(pArray, newCapacity);
+	}
+
+	u8* pDest = (u8*)pArray->pData + (pArray->count * pArray->elementSize);
+	cuMemoryCopy(pDest, pElement, pArray->elementSize);
+	pArray->count++;
+}
+
+void* cuArrayGet(CuArray* pArray, u32 index)
+{
+	CU_ASSERT(pArray != CU_NULL);
+	CU_ASSERT(index < pArray->count);
+
+	return (u8*)pArray->pData + (index * pArray->elementSize);
+}
+
 void cuArrayFree(CuArray* pArray)
 {
 	CU_ASSERT(pArray != CU_NULL);

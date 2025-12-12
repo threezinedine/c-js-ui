@@ -4,8 +4,7 @@
 extern "C" {
 #endif
 
-#include "common.h"
-#include "time.h"
+#include "logger.h"
 
 #if __cplusplus
 }

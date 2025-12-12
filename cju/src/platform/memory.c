@@ -112,11 +112,11 @@ void cuMemoryAssertNoLeaks()
 	if (gMemoryBlocksHead != CU_NULL)
 	{
 		cuConsoleSetColor(CU_CONSOLE_COLOR_RED);
-		cuConsolePrintFormat("Memory leaks detected:\n");
+		cuPrintFormat("Memory leaks detected:\n");
 		MemoryBlock* pBlock = gMemoryBlocksHead;
 		CU_ASSERT(pBlock != CU_NULL);
 		{
-			cuConsolePrintFormat("Leaked block at address %p of size %u bytes\n", pBlock->address, pBlock->size);
+			cuPrintFormat("Leaked block at address %p of size %u bytes\n", pBlock->address, pBlock->size);
 			cuPrintTrace(&pBlock->traceInfo);
 			pBlock = pBlock->pNext;
 		}
@@ -176,23 +176,23 @@ static int fullBacktrace(void* data, uintptr_t pc, const char* filename, int lin
 {
 	CuConsoleColor prevColor = CU_CONSOLE_COLOR_DEFAULT;
 	cuConsoleSetColor(CU_CONSOLE_COLOR_YELLOW);
-	cuConsolePrintFormat("  %p : ", (void*)pc);
+	cuPrintFormat("  %p : ", (void*)pc);
 	cuConsoleSetColor(prevColor);
 	if (function)
 	{
-		cuConsolePrintFormat("%s", function);
+		cuPrintFormat("%s", function);
 	}
 	else
 	{
-		cuConsolePrintFormat("<unknown>");
+		cuPrintFormat("<unknown>");
 	}
 	if (filename)
 	{
-		cuConsolePrintFormat(" at %s:%d\n", filename, lineno);
+		cuPrintFormat(" at %s:%d\n", filename, lineno);
 	}
 	else
 	{
-		cuConsolePrintFormat(" at <unknown>:%d\n", lineno);
+		cuPrintFormat(" at <unknown>:%d\n", lineno);
 	}
 }
 #endif

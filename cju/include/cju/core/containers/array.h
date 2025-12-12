@@ -34,6 +34,25 @@ CuArray* cuArrayInit(u32 elementSize, u32 capacity);
 void cuArrayResize(CuArray* pArray, u32 newCapacity);
 
 /**
+ * Adds a new element to the end of the dynamic array.
+ * If the array is full, it will be resized to accommodate the new element.
+ *
+ * @param pArray   A pointer to the CuArray to which the element will be added.
+ * @param pElement A pointer to the element to add to the array.
+ */
+void cuArrayPushBack(CuArray* pArray, const void* pElement);
+
+/**
+ * Retrieves a pointer to the element at the specified index in the dynamic array.
+ *
+ * @param pArray A pointer to the CuArray from which to retrieve the element.
+ * @param index  The index of the element to retrieve.
+ *
+ * @return A pointer to the element at the specified index.
+ */
+void* cuArrayGet(CuArray* pArray, u32 index);
+
+/**
  * Frees the memory allocated for the dynamic array.
  *
  * @param pArray A pointer to the CuArray to free.
@@ -51,6 +70,37 @@ void cuArrayFree(CuArray* pArray);
 #define CU_ARRAY_INIT(T, cap) (cuArrayInit(sizeof(T), (cap)))
 
 #if CU_DEBUG
+#define CU_ARRAY_TYPE_ASSERT(T, vec)                                                                                   \
+	do                                                                                                                 \
+	{                                                                                                                  \
+		CU_ASSERT(sizeof(T) == (vec)->elementSize);                                                                    \
+	} while (CU_FALSE)
+#else
+#define CU_ARRAY_TYPE_ASSERT(T, vec)
+#endif
+
+/**
+ * Macro to add a new element to the end of a typed array.
+ *
+ * @param T The type of elements in the array.
+ * @param vec A pointer to the CuArray to which the element will be added.
+ * @param value The value of the element to add to the array.
+ */
+#define CU_ARRAY_PUSH_BACK(T, vec, value)                                                                              \
+	do                                                                                                                 \
+	{                                                                                                                  \
+		CU_ARRAY_TYPE_ASSERT(T, vec);                                                                                  \
+		T rightValue = value;                                                                                          \
+		cuArrayPushBack((CuArray*)(vec), &rightValue);                                                                 \
+	} while (CU_FALSE)
+
+#define CU_ARRAY_GET(T, vec, index)                                                                                    \
+	((T*)((u8*)(vec)->pData + ((index) * sizeof(T))));                                                                 \
+	do                                                                                                                 \
+	{                                                                                                                  \
+		CU_ARRAY_TYPE_ASSERT(T, vec);                                                                                  \
+	} while (CU_FALSE)
+
 /**
  * Macro to resize a typed array to a new capacity.
  *
@@ -61,14 +111,10 @@ void cuArrayFree(CuArray* pArray);
 #define CU_ARRAY_RESIZE(T, vec, newCap)                                                                                \
 	do                                                                                                                 \
 	{                                                                                                                  \
-		CU_ASSERT(sizeof(T) == (vec)->elementSize);                                                                    \
+		CU_ARRAY_TYPE_ASSERT(T, vec);                                                                                  \
 		cuArrayResize((CuArray*)(vec), (newCap));                                                                      \
-	} while (0)
-#else
-#define CU_ARRAY_RESIZE(T, vec, newCap) (cuArrayResize((CuArray*)(vec), (newCap)))
-#endif
+	} while (CU_FALSE)
 
-#if CU_DEBUG
 /**
  * Macro to free a typed array.
  *
@@ -78,9 +124,6 @@ void cuArrayFree(CuArray* pArray);
 #define CU_ARRAY_FREE(T, vec)                                                                                          \
 	do                                                                                                                 \
 	{                                                                                                                  \
-		CU_ASSERT(sizeof(T) == (vec)->elementSize);                                                                    \
+		CU_ARRAY_TYPE_ASSERT(T, vec);                                                                                  \
 		cuArrayFree((CuArray*)(vec));                                                                                  \
-	} while (0)
-#else
-#define CU_ARRAY_FREE(T, vec) (cuArrayFree(vec))
-#endif
+	} while (CU_FALSE)

@@ -40,7 +40,7 @@ typedef u8 b8;
 		if (!(cond))                                                                                                   \
 		{                                                                                                              \
 			cuConsoleSetColor(CU_CONSOLE_COLOR_RED);                                                                   \
-			cuConsolePrintFormat("Assertion failed: %s, file %s, line %d\n", #cond, __FILE__, __LINE__);               \
+			cuPrintFormat("Assertion failed: %s, file %s, line %d\n", #cond, __FILE__, __LINE__);                      \
 			cuConsoleSetColor(CU_CONSOLE_COLOR_RESET);                                                                 \
 			debugbreak();                                                                                              \
 		}                                                                                                              \
@@ -54,7 +54,7 @@ typedef u8 b8;
 			cuConsoleSetColor(CU_CONSOLE_COLOR_RED);                                                                   \
 			char buffer[512];                                                                                          \
 			cuBufferedString(buffer, sizeof(buffer), msg, ##__VA_ARGS__);                                              \
-			cuConsolePrintFormat("Assertion failed: message: %s, file %s, line %d\n", buffer, __FILE__, __LINE__);     \
+			cuPrintFormat("Assertion failed: message: %s, file %s, line %d\n", buffer, __FILE__, __LINE__);            \
 			cuConsoleSetColor(CU_CONSOLE_COLOR_RESET);                                                                 \
 			debugbreak();                                                                                              \
 		}                                                                                                              \
