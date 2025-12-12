@@ -13,7 +13,11 @@ struct TraceInfo
 	// Windows-specific trace information can be added here
 };
 #elif CU_PLATFORM_UNIX || CU_PLATFORM_WEB
-#include <link.h>
+#include <backtrace.h>
+#include <execinfo.h>
+#include <stdio.h>
+
+// for FILE reading include
 
 struct TraceInfo
 {
@@ -148,11 +152,16 @@ void cuGetCurrentTrace(TraceInfo* pOutTraceInfo)
 #endif
 }
 
+#if CU_PLATFORM_UNIX || CU_PLATFORM_WEB
+static int fullBacktrace(void* data, uintptr_t pc, const char* filename, int lineno, const char* function);
+#endif
+
 void cuPrintTrace(const TraceInfo* pTraceInfo)
 {
 #if CU_PLATFORM_WINDOWS
 	CU_NOT_IMPLEMENTED();
 #elif CU_PLATFORM_UNIX || CU_PLATFORM_WEB
+#if 0
 	char** symbols = backtrace_symbols(pTraceInfo->backtracePtrs, pTraceInfo->traceCount);
 	for (u32 i = 0; i < pTraceInfo->traceCount; ++i)
 	{
@@ -160,6 +169,41 @@ void cuPrintTrace(const TraceInfo* pTraceInfo)
 	}
 	free(symbols);
 #else
+	struct backtrace_state* pState = backtrace_create_state(
+		"/home/threezinedine/Projects/c-js-ui/cju/build/linux/debug/examples/platforms/memory", 1, NULL, NULL);
+	for (u32 i = 0; i < pTraceInfo->traceCount; ++i)
+	{
+		backtrace_pcinfo(pState, (size_t)(pTraceInfo->backtracePtrs[i]), fullBacktrace, NULL, NULL);
+	}
+#endif
+	debugbreak();
+#else
 #error "Platform not supported"
 #endif
 }
+
+#if CU_PLATFORM_UNIX || CU_PLATFORM_WEB
+static int fullBacktrace(void* data, uintptr_t pc, const char* filename, int lineno, const char* function)
+{
+	CuConsoleColor prevColor = CU_CONSOLE_COLOR_DEFAULT;
+	cuConsoleSetColor(CU_CONSOLE_COLOR_YELLOW);
+	cuConsolePrintFormat("  %p : ", (void*)pc);
+	cuConsoleSetColor(prevColor);
+	if (function)
+	{
+		cuConsolePrintFormat("%s", function);
+	}
+	else
+	{
+		cuConsolePrintFormat("<unknown>");
+	}
+	if (filename)
+	{
+		cuConsolePrintFormat(" at %s:%d\n", filename, lineno);
+	}
+	else
+	{
+		cuConsolePrintFormat(" at <unknown>:%d\n", lineno);
+	}
+}
+#endif

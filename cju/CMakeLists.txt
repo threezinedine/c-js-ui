@@ -39,6 +39,20 @@ set(CU_DEFINITIONS
     ${COMMON_DEFINITIONS}
 )
 
+set(CU_TARGET_LINK_OPTIONS)
+
+if (CU_PLATFORM_UNIX)
+    list(APPEND CU_TARGET_LINK_OPTIONS -rdynamic)
+endif()
+
+set(CU_LINK_LIBS
+    ${COMMON_LIBS}
+)
+
+if (CU_PLATFORM_UNIX)
+    list(APPEND CU_LINK_LIBS dl m pthread)
+endif()
+
 set(STATIC_PROJECT_NAME "${PROJECT_NAME}-static")
 if (CU_BUILD_STATIC)
     add_library(
@@ -57,6 +71,16 @@ if (CU_BUILD_STATIC)
         ${STATIC_PROJECT_NAME}
         PUBLIC
         ${CU_DEFINITIONS}
+    )
+    target_link_libraries(
+        ${STATIC_PROJECT_NAME}
+        PUBLIC
+        ${CU_LINK_LIBS}
+    )
+    target_link_options(
+        ${STATIC_PROJECT_NAME}
+        PUBLIC
+        ${CU_TARGET_LINK_OPTIONS}
     )
 endif()
 
@@ -78,6 +102,16 @@ if (CU_BUILD_SHARED)
         ${SHARED_PROJECT_NAME}
         PUBLIC
         ${CU_DEFINITIONS}
+    )
+    target_link_libraries(
+        ${SHARED_PROJECT_NAME}
+        PUBLIC
+        ${CU_LINK_LIBS}
+    )
+    target_link_options(
+        ${SHARED_PROJECT_NAME}
+        PUBLIC
+        ${CU_TARGET_LINK_OPTIONS}
     )
 endif()
 

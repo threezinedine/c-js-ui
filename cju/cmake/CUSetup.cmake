@@ -43,13 +43,17 @@ endmacro()
 
 macro(CU_Setup)
     set(COMMON_DEFINITIONS "")
+    set(COMMON_LIBS "")
     CU_PlatformDetection()
 
     option(CMAKE_BUILD_TYPE "Build type" Debug)
 
     if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+        set (CU_DEBUG TRUE)
         list(APPEND COMMON_DEFINITIONS CU_DEBUG=1)
+        add_compile_options(-g -O0)
     else()
+        set (CU_DEBUG FALSE)
         list(APPEND COMMON_DEFINITIONS CU_RELEASE=1)
     endif()
 
@@ -60,6 +64,15 @@ macro(CU_Setup)
             list(APPEND COMMON_DEFINITIONS ${OPTION}=0)
         endif()
     endforeach()
+
+    if (CU_DEBUG)
+        if (CU_PLATFORM_WINDOWS)
+        else()
+            list(APPEND COMMON_LIBS backtrace)
+        endif()
+    else()
+        message(STATUS "CU Build Type: Release")
+    endif()
 
     message(STATUS "Definitions:")
     foreach(DEF ${COMMON_DEFINITIONS})
