@@ -161,21 +161,12 @@ void cuPrintTrace(const TraceInfo* pTraceInfo)
 #if CU_PLATFORM_WINDOWS
 	CU_NOT_IMPLEMENTED();
 #elif CU_PLATFORM_UNIX || CU_PLATFORM_WEB
-#if 0
-	char** symbols = backtrace_symbols(pTraceInfo->backtracePtrs, pTraceInfo->traceCount);
-	for (u32 i = 0; i < pTraceInfo->traceCount; ++i)
-	{
-		cuConsolePrintFormat("%s\n", symbols[i]);
-	}
-	free(symbols);
-#else
 	struct backtrace_state* pState = backtrace_create_state(
 		"/home/threezinedine/Projects/c-js-ui/cju/build/linux/debug/examples/platforms/memory", 1, NULL, NULL);
 	for (u32 i = 0; i < pTraceInfo->traceCount; ++i)
 	{
 		backtrace_pcinfo(pState, (size_t)(pTraceInfo->backtracePtrs[i]), fullBacktrace, NULL, NULL);
 	}
-#endif
 	debugbreak();
 #else
 #error "Platform not supported"
