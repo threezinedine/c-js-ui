@@ -17,7 +17,7 @@ foreach(EXAMPLE ${PLATFORM_EXAMPLES})
     target_link_libraries(
         ${EXAMPLE_NAME}
         PUBLIC
-        CJU
+        CU
     )
 endforeach()
 

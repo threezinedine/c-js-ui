@@ -1,0 +1,14 @@
+{
+	"configurations": [
+		{
+			"name": "Linux",
+			"includePath": ["${workspaceFolder}/**"],
+			"defines": ["CU_PLATFORM_UNIX=1", "CU_DEBUG=1"],
+			"compilerPath": "/usr/bin/clang",
+			"cStandard": "c17",
+			"cppStandard": "c++17",
+			"intelliSenseMode": "linux-clang-x64"
+		}
+	],
+	"version": 4
+}
