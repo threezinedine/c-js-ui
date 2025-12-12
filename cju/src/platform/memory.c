@@ -46,8 +46,7 @@ typedef struct MemoryBlock
 static u32 gTotalAllocatedMemoryBytes = 0;
 
 static MemoryBlock* gMemoryBlocksHead = CU_NULL;
-
-void* cuAllocate(u32 size)
+void*				cuAllocate(u32 size)
 {
 	MemoryBlock* pBlock = (MemoryBlock*)_malloc(sizeof(MemoryBlock));
 	memset(pBlock, 0, sizeof(MemoryBlock));
@@ -72,13 +71,13 @@ void cuFree(void* ptr, u32 size)
 	{
 		if (pBlock->address != ptr)
 		{
-			pBlock = pBlock->pNext;
+			pPreviousBlock = pBlock;
+			pBlock		   = pBlock->pNext;
 		}
 		else
 		{
 			break;
 		}
-		pPreviousBlock = pBlock;
 	}
 
 	CU_ASSERT_MSG(pBlock != CU_NULL, "Attempting to free unallocated memory at address %p", ptr);
@@ -161,8 +160,7 @@ void cuPrintTrace(const TraceInfo* pTraceInfo)
 #if CU_PLATFORM_WINDOWS
 	CU_NOT_IMPLEMENTED();
 #elif CU_PLATFORM_UNIX || CU_PLATFORM_WEB
-	struct backtrace_state* pState = backtrace_create_state(
-		"/home/threezinedine/Projects/c-js-ui/cju/build/linux/debug/examples/platforms/memory", 1, NULL, NULL);
+	struct backtrace_state* pState = backtrace_create_state(NULL, 1, NULL, NULL);
 	for (u32 i = 0; i < pTraceInfo->traceCount; ++i)
 	{
 		backtrace_pcinfo(pState, (size_t)(pTraceInfo->backtracePtrs[i]), fullBacktrace, NULL, NULL);

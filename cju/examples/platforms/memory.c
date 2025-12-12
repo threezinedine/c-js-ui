@@ -4,7 +4,7 @@ int main()
 {
 	void* ptr = cuAllocate(3);
 
-	cuFree(ptr, 3);
+	// cuFree(ptr, 3);
 
 	cuMemoryAssertNoLeaks();
 

@@ -41,9 +41,10 @@ macro(CU_PlatformDetection)
 endmacro()
 
 
-macro(CU_Setup)
+macro(CU_Setup CMAKE_PATH)
     set(COMMON_DEFINITIONS "")
     set(COMMON_LIBS "")
+    set(CU_CMAKE_MODULE_PATH ${CMAKE_PATH})
     CU_PlatformDetection()
 
     option(CMAKE_BUILD_TYPE "Build type" Debug)

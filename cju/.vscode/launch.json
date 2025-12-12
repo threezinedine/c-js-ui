@@ -7,6 +7,14 @@
 			"preLaunchTask": "Build",
 			"program": "${workspaceRoot}/build/linux/debug/examples/platforms/memory",
 			"cwd": "${workspaceRoot}/build/linux/debug/examples/platforms"
+		},
+		{
+			"name": "Test: CJU",
+			"type": "cppdbg",
+			"request": "launch",
+			"preLaunchTask": "Build",
+			"program": "${workspaceRoot}/build/linux/debug/tests/CJUTests",
+			"cwd": "${workspaceRoot}/build/linux/debug/tests"
 		}
 	]
 }

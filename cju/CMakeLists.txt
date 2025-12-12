@@ -1,13 +1,15 @@
 cmake_minimum_required(VERSION 3.20)
 project(CU)
 
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+set(CU_CMAKE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+list(APPEND CMAKE_MODULE_PATH ${CU_CMAKE_PATH})
 include(CUSetup)
-CU_Setup()
+CU_Setup(${CU_CMAKE_PATH})
 
 option(CU_BUILD_STATIC   "Build CU as a static library" ON)
 option(CU_BUILD_SHARED   "Build CU as a shared library" OFF)
 option(CU_BUILD_EXAMPLES "Build CU example programs"    OFF)
+option(CU_BUILD_TESTS    "Build CU test programs"       OFF)
 
 # Ensure that at least one library is built
 if (NOT CU_BUILD_STATIC AND NOT CU_BUILD_SHARED)
@@ -123,4 +125,8 @@ endif()
 
 if (CU_BUILD_EXAMPLES)
     add_subdirectory(examples)
+endif()
+
+if (CU_BUILD_TESTS)
+    add_subdirectory(tests)
 endif()

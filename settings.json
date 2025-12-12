@@ -15,10 +15,15 @@
 			"type": "library",
 			"buildTypesConfig": {
 				"debug": {
-					"options": "-DCMAKE_BUILD_TYPE=Debug -DCU_BUILD_EXAMPLES=ON -DCU_BUILD_SHARED=OFF -DCU_BUILD_STATIC=ON"
+					"options": "-DCU_BUILD_EXAMPLES=ON -DCU_BUILD_SHARED=OFF -DCU_BUILD_STATIC=ON -DCU_BUILD_TESTS=ON"
 				}
 			},
 			"executables": [
+				{
+					"name": "test",
+					"linuxPath": "{{ BUILD_DIR }}/tests/CJUTests",
+					"windowsPath": "{{ BUILD_DIR }}/tests/{{ BUILD_TYPE|capitalize }}/CJUTests.exe"
+				},
 				{
 					"name": "console",
 					"linuxPath": "{{ BUILD_DIR }}/examples/platforms/console",

@@ -4,8 +4,7 @@
 extern "C" {
 #endif
 
-#include "core/core.h"
-#include "platform/platform.h"
+#include "containers/containers.h"
 
 #if __cplusplus
 }

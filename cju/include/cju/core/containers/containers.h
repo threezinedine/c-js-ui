@@ -4,8 +4,8 @@
 extern "C" {
 #endif
 
-#include "core/core.h"
-#include "platform/platform.h"
+#include "array.h"
+#include "cju/platform/platform.h"
 
 #if __cplusplus
 }
