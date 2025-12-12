@@ -129,3 +129,20 @@ TEST(ArrayTest, ArrayWithPointer)
 
 	CU_ARRAY_FREE(int*, pArray);
 }
+
+TEST(ArrayTest, InsertAtTheBegging)
+{
+	CuArray* pArray = CU_ARRAY_INIT(int, 2);
+
+	CU_ARRAY_PUSH_BACK(int, pArray, 2);
+	CU_ARRAY_PUSH_BACK(int, pArray, 3);
+
+	CU_ARRAY_INSERT(int, pArray, 0, 1);
+
+	EXPECT_EQ(pArray->count, 3);
+
+	int* firstValue = CU_ARRAY_GET(int, pArray, 0);
+	EXPECT_EQ(*firstValue, 1);
+
+	CU_ARRAY_FREE(int, pArray);
+}

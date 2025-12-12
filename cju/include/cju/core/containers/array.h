@@ -59,6 +59,28 @@ void cuArrayResize(CuArray* pArray, u32 newCapacity);
 void cuArrayPushBack(CuArray* pArray, const void* pElement);
 
 /**
+ * Inserts a new element at the specified index in the dynamic array.
+ * Elements at and after the index are shifted to the right.
+ * If the array is full, it will be resized to accommodate the new element.
+ *
+ * @param pArray   A pointer to the CuArray in which the element will be inserted.
+ * @param index  The index of the element to remove. If the index is out of bounds, an exception is raised.
+ * the index must be less than or equal to count (== count => push back).
+ * @param pElement A pointer to the element to insert into the array.
+ */
+void cuArrayInsert(CuArray* pArray, u32 index, const void* pElement);
+
+/**
+ * Removes the element at the specified index from the dynamic array.
+ * Elements after the index are shifted to the left.
+ *
+ * @param pArray A pointer to the CuArray from which the element will be removed.
+ * @param index  The index of the element to remove. If the index is out of bounds, an exception is raised.
+ * the index must be less than or equal to count (== count => push back).
+ */
+void cuArrayRemoveAt(CuArray* pArray, u32 index);
+
+/**
  * Retrieves a pointer to the element at the specified index in the dynamic array.
  *
  * @param pArray A pointer to the CuArray from which to retrieve the element.
@@ -128,6 +150,43 @@ void cuArrayFree(CuArray* pArray);
 		cuArrayPushBack((CuArray*)(vec), &rightValue);                                                                 \
 	} while (CU_FALSE)
 
+/**
+ * Macro to insert a new element at the specified index in a typed array.
+ *
+ * @param T The type of elements in the array.
+ * @param vec A pointer to the CuArray in which the element will be inserted.
+ * @param index The index at which to insert the new element.
+ * @param value The value of the element to insert into the array.
+ */
+#define CU_ARRAY_INSERT(T, vec, index, value)                                                                          \
+	do                                                                                                                 \
+	{                                                                                                                  \
+		CU_ARRAY_TYPE_ASSERT(T, vec);                                                                                  \
+		T rightValue = value;                                                                                          \
+		cuArrayInsert((CuArray*)(vec), (index), &rightValue);                                                          \
+	} while (CU_FALSE)
+
+/**
+ * Macro to remove the element at the specified index from a typed array.
+ * @param T The type of elements in the array.
+ * @param vec A pointer to the CuArray from which the element will be removed.
+ * @param index The index of the element to remove.
+ */
+#define CU_ARRAY_REMOVE_AT(T, vec, index)                                                                              \
+	do                                                                                                                 \
+	{                                                                                                                  \
+		CU_ARRAY_TYPE_ASSERT(T, vec);                                                                                  \
+		cuArrayRemoveAt((CuArray*)(vec), (index));                                                                     \
+	} while (CU_FALSE)
+
+/**
+ * Macro to retrieve a pointer to the element at the specified index in a typed array.
+ * @param T The type of elements in the array.
+ * @param vec A pointer to the Cu
+ * Array from which to retrieve the element.
+ * @param index The index of the element to retrieve.
+ * @return A pointer to the element at the specified index.
+ */
 #define CU_ARRAY_GET(T, vec, index)                                                                                    \
 	((T*)(cuArrayGet((vec), (index))));                                                                                \
 	do                                                                                                                 \

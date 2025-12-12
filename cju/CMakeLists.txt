@@ -128,5 +128,35 @@ if (CU_BUILD_EXAMPLES)
 endif()
 
 if (CU_BUILD_TESTS)
+    set(TEST_PROJECT_NAME "${PROJECT_NAME}-test")
+    add_library(
+        ${TEST_PROJECT_NAME}
+        STATIC
+        ${CU_ALL_SOURCES}
+    )
+
+    target_include_directories(
+        ${TEST_PROJECT_NAME}
+        PUBLIC
+        ${CU_INCLUDE_DIRS}
+    )
+
+    target_compile_definitions(
+        ${TEST_PROJECT_NAME}
+        PUBLIC
+        ${CU_DEFINITIONS}
+        CU_TESTING
+    )
+    target_link_libraries(
+        ${TEST_PROJECT_NAME}
+        PUBLIC
+        ${CU_LINK_LIBS}
+    )
+    target_link_options(
+        ${TEST_PROJECT_NAME}
+        PUBLIC
+        ${CU_TARGET_LINK_OPTIONS}
+    )
+
     add_subdirectory(tests)
 endif()

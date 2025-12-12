@@ -30,6 +30,6 @@ CU_FindPackage(cu-googletest "Dependencies")
 target_link_libraries(
     ${PROJECT_NAME}
     PRIVATE
-    CU
+    CU-test
     cu-googletest
 )
