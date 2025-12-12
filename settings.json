@@ -1,0 +1,30 @@
+{
+	"config": {
+		"windows": {
+			"cmake_tool": "Visual Studio 17 2022"
+		},
+		"linux": {
+			"cmake_tool": "Unix Makefiles"
+		},
+		"neededCommands": ["cmake", "git"]
+	},
+	"projects": [
+		{
+			"name": "cju",
+			"language": "C",
+			"type": "library",
+			"buildTypesConfig": {
+				"debug": {
+					"options": "-DCMAKE_BUILD_TYPE=Debug -DCJU_BUILD_EXAMPLES=ON -DCJU_BUILD_SHARED=OFF -DCJU_BUILD_STATIC=ON"
+				}
+			},
+			"executables": [
+				{
+					"name": "console",
+					"linuxPath": "{{ BUILD_DIR }}/examples/platforms/console",
+					"windowsPath": "{{ BUILD_DIR }}/examples/platforms/{{ BUILD_TYPE|capitalize }}/console.exe"
+				}
+			]
+		}
+	]
+}

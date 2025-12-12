@@ -1,0 +1,60 @@
+macro(CJU_FindPackage PACKAGE_NAME FOLDER_NAME)
+    set(${PACKAGE_NAME}_DIR "${CJU_CMAKE_MODULE_PATH}")
+
+    set(CMAKE_FOLDER ${FOLDER_NAME})
+    find_package(${PACKAGE_NAME} REQUIRED)
+    unset(CMAKE_FOLDER)
+endmacro()
+
+macro(CJU_Option OPTION_NAME OPTION_DEFAULT)
+    option(${OPTION_NAME} "CJU Option: ${OPTION_NAME}" ${OPTION_DEFAULT})
+
+    list(APPEND CJU_OPTIONS ${OPTION_NAME})
+endmacro()
+
+macro(CJU_PlatformDetection)
+    set(CJU_PLATFORM_WINDOWS FALSE)
+    set(CJU_PLATFORM_UNIX FALSE)
+    set(CJU_PLATFORM_WEB FALSE)
+
+    if (WIN32)
+        set(CJU_PLATFORM_WINDOWS TRUE)
+        list(APPEND COMMON_DEFINITIONS CJU_PLATFORM_WINDOWS=1)
+    elseif(UNIX)
+        set(CJU_PLATFORM_UNIX TRUE)
+        list(APPEND COMMON_DEFINITIONS CJU_PLATFORM_UNIX=1)
+    elseif(EMSCRIPTEN)
+        set(CJU_PLATFORM_WEB TRUE)
+        list(APPEND COMMON_DEFINITIONS CJU_PLATFORM_WEB=1)
+    else()
+        message(FATAL_ERROR "Unsupported platform")
+    endif()
+
+    include(TestBigEndian)
+    test_big_endian(IS_BIG_ENDIAN)
+
+    if (IS_BIG_ENDIAN)
+        list(APPEND COMMON_DEFINITIONS CJU_PLATFORM_BIG_ENDIAN=1)
+    else()
+        list(APPEND COMMON_DEFINITIONS CJU_PLATFORM_LITTLE_ENDIAN=1)
+    endif()
+endmacro()
+
+
+macro(CJU_Setup)
+    set(COMMON_DEFINITIONS "")
+    CJU_PlatformDetection()
+
+    foreach(OPTION ${CJU_OPTIONS})
+        if(${OPTION})
+            list(APPEND COMMON_DEFINITIONS ${OPTION}=1)
+        else()
+            list(APPEND COMMON_DEFINITIONS ${OPTION}=0)
+        endif()
+    endforeach()
+
+    message(STATUS "Definitions:")
+    foreach(DEF ${COMMON_DEFINITIONS})
+        message(STATUS "  ${DEF}")
+    endforeach()
+endmacro()
