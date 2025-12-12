@@ -69,6 +69,14 @@ void cuArrayPushBack(CuArray* pArray, const void* pElement);
 void* cuArrayGet(CuArray* pArray, u32 index);
 
 /**
+ * Clears the dynamic array by setting its count to zero.
+ * The capacity remains unchanged, and the allocated memory is not freed.
+ *
+ * @param pArray A pointer to the CuArray to clear.
+ */
+void cuArrayClear(CuArray* pArray);
+
+/**
  * Frees the memory allocated for the dynamic array.
  *
  * @param pArray A pointer to the CuArray to free.
@@ -125,6 +133,13 @@ void cuArrayFree(CuArray* pArray);
 	do                                                                                                                 \
 	{                                                                                                                  \
 		CU_ARRAY_TYPE_ASSERT(T, vec);                                                                                  \
+	} while (CU_FALSE)
+
+#define CU_ARRAY_CLEAR(T, vec)                                                                                         \
+	do                                                                                                                 \
+	{                                                                                                                  \
+		CU_ARRAY_TYPE_ASSERT(T, vec);                                                                                  \
+		cuArrayClear((CuArray*)(vec));                                                                                 \
 	} while (CU_FALSE)
 
 /**

@@ -75,3 +75,57 @@ TEST(ArrayTest, DoSomethingWithDifferentType)
 
 	CU_ARRAY_FREE(double, pArray);
 }
+
+TEST(ArrayTest, PushIndexOutOfCapacity)
+{
+	CuArray* pArray = CU_ARRAY_INIT(int, 2);
+
+	CU_ARRAY_PUSH_BACK(int, pArray, 1);
+	CU_ARRAY_PUSH_BACK(int, pArray, 2);
+	CU_ARRAY_PUSH_BACK(int, pArray, 3); // This should trigger a resize
+
+	EXPECT_EQ(pArray->count, 3);
+	EXPECT_GE(pArray->capacity, 4);
+
+	int* value = CU_ARRAY_GET(int, pArray, 2);
+	EXPECT_EQ(*value, 3);
+
+	CU_ARRAY_FREE(int, pArray);
+}
+
+TEST(ArrayTest, Clear)
+{
+	CuArray* pArray = CU_ARRAY_INIT(int, 2);
+
+	CU_ARRAY_PUSH_BACK(int, pArray, 1);
+	CU_ARRAY_PUSH_BACK(int, pArray, 2);
+	CU_ARRAY_PUSH_BACK(int, pArray, 3);
+
+	EXPECT_EQ(pArray->count, 3);
+
+	CU_ARRAY_CLEAR(int, pArray);
+
+	EXPECT_EQ(pArray->count, 0);
+	EXPECT_EQ(pArray->capacity, 4);
+
+	CU_ARRAY_FREE(int, pArray);
+}
+
+TEST(ArrayTest, ArrayWithPointer)
+{
+	CuArray* pArray = CU_ARRAY_INIT(int*, 2);
+
+	int a = 10;
+	int b = 20;
+
+	CU_ARRAY_PUSH_BACK(int*, pArray, &a);
+	CU_ARRAY_PUSH_BACK(int*, pArray, &b);
+
+	int** ptrA = CU_ARRAY_GET(int*, pArray, 0);
+	int** ptrB = CU_ARRAY_GET(int*, pArray, 1);
+
+	EXPECT_EQ(**ptrA, 10);
+	EXPECT_EQ(**ptrB, 20);
+
+	CU_ARRAY_FREE(int*, pArray);
+}

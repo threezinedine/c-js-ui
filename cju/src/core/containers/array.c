@@ -69,6 +69,12 @@ void* cuArrayGet(CuArray* pArray, u32 index)
 	return (u8*)pArray->pData + (index * pArray->elementSize);
 }
 
+void cuArrayClear(CuArray* pArray)
+{
+	CU_ASSERT(pArray != CU_NULL);
+	pArray->count = 0;
+}
+
 void cuArrayFree(CuArray* pArray)
 {
 	CU_ASSERT(pArray != CU_NULL);
