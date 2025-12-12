@@ -13,3 +13,14 @@ static_assert(sizeof(i64) == 8, "i64 must be 8 bytes");
 
 static_assert(sizeof(f32) == 4, "f32 must be 4 bytes");
 static_assert(sizeof(f64) == 8, "f64 must be 8 bytes");
+
+void debugbreak()
+{
+#if CU_PLATFORM_WINDOWS
+#error "Windows platform is not yet supported"
+#elif CU_PLATFORM_UNIX || CU_PLATFORM_WEB
+	CU_RAISE_EXCEPTION(CU_EXCEPTION_CODE_UNKNOWN, "debugbreak called");
+#else
+#error "Platform not supported"
+#endif
+}

@@ -65,3 +65,13 @@ TEST(ArrayTest, GetIndexOutOfBounds)
 
 	CU_ARRAY_FREE(int, pArray);
 }
+
+TEST(ArrayTest, DoSomethingWithDifferentType)
+{
+	CuArray* pArray = CU_ARRAY_INIT(double, 3);
+
+	CU_ARRAY_PUSH_BACK(double, pArray, 3.14);
+	EXPECT_EXIT(CU_ARRAY_GET(int, pArray, 0), ::testing::ExitedWithCode(CU_EXCEPTION_CODE_INVALID_TYPE), "");
+
+	CU_ARRAY_FREE(double, pArray);
+}

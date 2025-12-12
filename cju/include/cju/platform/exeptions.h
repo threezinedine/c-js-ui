@@ -9,6 +9,7 @@ typedef enum CuExceptionCode
 {
 	CU_EXCEPTION_CODE_UNKNOWN = 1,
 	CU_EXCEPTION_CODE_INDEX_OUT_OF_BOUNDS,
+	CU_EXCEPTION_CODE_INVALID_TYPE,
 	// Add more exception codes as needed.
 } CuExceptionCode;
 

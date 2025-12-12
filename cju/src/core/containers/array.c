@@ -1,6 +1,10 @@
 #include "cju/core/containers/containers.h"
 
+#if CU_DEBUG
+CuArray* cuArrayInit(u32 elementSize, u32 capacity, const char* pTypeName)
+#else
 CuArray* cuArrayInit(u32 elementSize, u32 capacity)
+#endif
 {
 	CuArray* pArray = (CuArray*)cuAllocate(sizeof(CuArray));
 	CU_ASSERT(pArray != CU_NULL);
@@ -9,6 +13,10 @@ CuArray* cuArrayInit(u32 elementSize, u32 capacity)
 	pArray->capacity	= capacity;
 	pArray->count		= 0;
 	pArray->pData		= cuAllocate(elementSize * capacity);
+
+#if CU_DEBUG
+	pArray->pTypeName = pTypeName;
+#endif
 	return pArray;
 }
 

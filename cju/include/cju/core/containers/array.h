@@ -11,10 +11,25 @@ typedef struct CuArray
 	u32	  count;
 	u32	  capacity;
 	u32	  elementSize;
+
+#if CU_DEBUG
+	const char* pTypeName; ///< Used for debugging purposes, for checking type consistency
+#endif
 } CuArray;
 
+#if CU_DEBUG
 /**
-
+ * Initializes a new dynamic array with the specified element size and capacity.
+ *
+ * @param elementSize The size of each element in the array.
+ * @param capacity    The initial capacity of the array.
+ * @param pTypeName   The name of the type stored in the array (for debugging purposes).
+ *
+ * @return A pointer to the newly created CuArray.
+ */
+CuArray* cuArrayInit(u32 elementSize, u32 capacity, const char* pTypeName);
+#else
+/**
  * Initializes a new dynamic array with the specified element size and capacity.
  *
  * @param elementSize The size of each element in the array.
@@ -23,6 +38,7 @@ typedef struct CuArray
  * @return A pointer to the newly created CuArray.
  */
 CuArray* cuArrayInit(u32 elementSize, u32 capacity);
+#endif
 
 /**
  * Resizes the dynamic array to the new specified capacity.
@@ -59,6 +75,7 @@ void* cuArrayGet(CuArray* pArray, u32 index);
  */
 void cuArrayFree(CuArray* pArray);
 
+#if CU_DEBUG
 /**
  * Macro to define a typed array structure for a specific type T.
  *
@@ -67,13 +84,22 @@ void cuArrayFree(CuArray* pArray);
  *
  * @return A pointer to the defined array structure.
  */
+#define CU_ARRAY_INIT(T, cap) (cuArrayInit(sizeof(T), (cap), #T))
+#else
 #define CU_ARRAY_INIT(T, cap) (cuArrayInit(sizeof(T), (cap)))
+#endif
 
 #if CU_DEBUG
 #define CU_ARRAY_TYPE_ASSERT(T, vec)                                                                                   \
 	do                                                                                                                 \
 	{                                                                                                                  \
-		CU_ASSERT(sizeof(T) == (vec)->elementSize);                                                                    \
+		if (cuStrEqual(#T, (vec)->pTypeName) == CU_FALSE)                                                              \
+		{                                                                                                              \
+			CU_RAISE_EXCEPTION(CU_EXCEPTION_CODE_INVALID_TYPE,                                                         \
+							   "Type mismatch: expected array of type '%s', but got type '%s'",                        \
+							   (vec)->pTypeName,                                                                       \
+							   #T);                                                                                    \
+		}                                                                                                              \
 	} while (CU_FALSE)
 #else
 #define CU_ARRAY_TYPE_ASSERT(T, vec)

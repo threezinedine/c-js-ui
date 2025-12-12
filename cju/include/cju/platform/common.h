@@ -24,14 +24,7 @@ typedef u8 b8;
 #define CU_KB(size) ((size) * 1024)
 #define CU_MB(size) (CU_KB(size) * 1024)
 
-#if CU_PLATFORM_WINDOWS
-#error "Windows platform is not yet supported"
-#elif CU_PLATFORM_UNIX || CU_PLATFORM_WEB
-#include <signal.h>
-#define debugbreak() __builtin_trap()
-#else
-#error "Platform not supported"
-#endif
+void debugbreak();
 
 #define CU_BUFFER_SIZE 1024
 
@@ -83,3 +76,4 @@ typedef u8 b8;
 #include "console.h"
 #include "exeptions.h"
 #include "memory.h"
+#include "string.h"
