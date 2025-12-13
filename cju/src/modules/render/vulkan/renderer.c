@@ -12,10 +12,13 @@ static void assertRequiredVulkanExtensions();
 static void assertRequiredVulkanLayers();
 static void createVulkanInstance();
 static void choosePhysicalDevice();
-static void createMainVulkanSurface();
 static void chooseGraphicsQueueFamily();
 static void choosePresentQueueFamily();
 static void createLogicalDevice();
+
+// ======================== Windows helper functions =======================
+static void createSurface(CuVulkanWindow* pVulkanWindow);
+static void createSwapchain(CuVulkanWindow* pVulkanWindow);
 
 #if CU_DEBUG
 static void createDebugMessenger();
@@ -58,10 +61,12 @@ void cuRendererInitialize()
 #endif // CU_DEBUG
 
 		choosePhysicalDevice();
-		createMainVulkanSurface();
+		createSurface(g_pMainWindow);
 		chooseGraphicsQueueFamily();
 		choosePresentQueueFamily();
 		createLogicalDevice();
+
+		createSwapchain(g_pMainWindow);
 	}
 }
 
@@ -368,31 +373,31 @@ static void chooseGraphicsQueueFamily()
 	CU_PLATFORM_API(cuFree)(queueFamiliesProperties, sizeof(VkQueueFamilyProperties) * queueFamiliesCount);
 }
 
-static void destroyMainVulkanSurface(void* pUserData);
-static void createMainVulkanSurface()
+static void destroySurface(void* pUserData);
+static void createSurface(CuVulkanWindow* pVulkanWindow)
 {
 	CU_ASSERT(gCuVulkanContext.instance != VK_NULL_HANDLE);
-	CU_ASSERT(g_pMainWindow != CU_NULL);
+	CU_ASSERT(pVulkanWindow != CU_NULL);
 
-	g_pMainWindow->surface =
-		CU_PLATFORM_API(cuWindowCreateVulkanSurface)(g_pMainWindow->pWindow, gCuVulkanContext.instance);
-	CU_LOG_DEBUG("Vulkan surface for main window created successfully.");
-	cuReleaseStackPush(g_pReleaseStack, destroyMainVulkanSurface, CU_NULL);
+	pVulkanWindow->surface =
+		CU_PLATFORM_API(cuWindowCreateVulkanSurface)(pVulkanWindow->pWindow, gCuVulkanContext.instance);
+	CU_LOG_DEBUG("Vulkan surface created successfully.");
+	cuReleaseStackPush(g_pReleaseStack, destroySurface, pVulkanWindow);
 }
 
-static void destroyMainVulkanSurface(void* pUserData)
+static void destroySurface(void* pUserData)
 {
-	CU_UNUSED(pUserData);
+	CuVulkanWindow* pVulkanWindow = (CuVulkanWindow*)pUserData;
 	CU_ASSERT(gCuVulkanContext.instance != VK_NULL_HANDLE);
-	CU_ASSERT(g_pMainWindow != CU_NULL);
-	CU_ASSERT(g_pMainWindow->surface != VK_NULL_HANDLE);
+	CU_ASSERT(pVulkanWindow != CU_NULL);
+	CU_ASSERT(pVulkanWindow->surface != VK_NULL_HANDLE);
 
 	CU_PLATFORM_API(cuWindowDestroyVulkanSurface)
-	(g_pMainWindow->pWindow, gCuVulkanContext.instance, g_pMainWindow->surface);
+	(pVulkanWindow->pWindow, gCuVulkanContext.instance, pVulkanWindow->surface);
 
-	g_pMainWindow->surface = VK_NULL_HANDLE;
+	pVulkanWindow->surface = VK_NULL_HANDLE;
 
-	CU_LOG_DEBUG("Vulkan surface for main window destroyed successfully.");
+	CU_LOG_DEBUG("Vulkan surface destroyed successfully.");
 }
 
 static void choosePresentQueueFamily()
@@ -477,6 +482,119 @@ static void destroyLogicalDevice(void* pUserData)
 	gCuVulkanContext.device = VK_NULL_HANDLE;
 
 	CU_LOG_DEBUG("Vulkan logical device destroyed successfully.");
+}
+
+static VkSurfaceFormatKHR chooseSwapSurfaceFormat(const VkSurfaceFormatKHR* availableFormats,
+												  u32						availableFormatsCount);
+static VkPresentModeKHR	  chooseSwapPresentMode(const VkPresentModeKHR* availablePresentModes,
+												u32						availablePresentModesCount);
+static i32				  getMinImageCountForSwapchain(const VkSurfaceCapabilitiesKHR* pSurfaceCapabilities);
+
+static void deleteSwapchain(void* pUserData);
+static void createSwapchain(CuVulkanWindow* pVulkanWindow)
+{
+	CU_ASSERT(gCuVulkanContext.device != VK_NULL_HANDLE);
+	CU_ASSERT(pVulkanWindow != CU_NULL);
+
+	// choose surface format
+	u32 surfaceFormatsCount = 0;
+	VK_ASSERT(vkGetPhysicalDeviceSurfaceFormatsKHR(
+		gCuVulkanContext.physicalDevice, pVulkanWindow->surface, &surfaceFormatsCount, CU_NULL));
+	VkSurfaceFormatKHR* surfaceFormats =
+		(VkSurfaceFormatKHR*)CU_PLATFORM_API(cuAllocate)(sizeof(VkSurfaceFormatKHR) * surfaceFormatsCount);
+	VK_ASSERT(vkGetPhysicalDeviceSurfaceFormatsKHR(
+		gCuVulkanContext.physicalDevice, pVulkanWindow->surface, &surfaceFormatsCount, surfaceFormats));
+	pVulkanWindow->surfaceFormat = chooseSwapSurfaceFormat(surfaceFormats, surfaceFormatsCount);
+
+	// choose present mode
+	u32 presentModesCount = 0;
+	VK_ASSERT(vkGetPhysicalDeviceSurfacePresentModesKHR(
+		gCuVulkanContext.physicalDevice, pVulkanWindow->surface, &presentModesCount, CU_NULL));
+	VkPresentModeKHR* presentModes =
+		(VkPresentModeKHR*)CU_PLATFORM_API(cuAllocate)(sizeof(VkPresentModeKHR) * presentModesCount);
+	VK_ASSERT(vkGetPhysicalDeviceSurfacePresentModesKHR(
+		gCuVulkanContext.physicalDevice, pVulkanWindow->surface, &presentModesCount, presentModes));
+	pVulkanWindow->presentMode = chooseSwapPresentMode(presentModes, presentModesCount);
+
+	// choose image count
+	VkSurfaceCapabilitiesKHR surfaceCapabilities = {};
+	VK_ASSERT(vkGetPhysicalDeviceSurfaceCapabilitiesKHR(
+		gCuVulkanContext.physicalDevice, pVulkanWindow->surface, &surfaceCapabilities));
+	pVulkanWindow->imageCount = getMinImageCountForSwapchain(&surfaceCapabilities);
+
+	VkSwapchainCreateInfoKHR swapchainInfo = {};
+	swapchainInfo.sType					   = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
+	swapchainInfo.surface				   = pVulkanWindow->surface;
+	swapchainInfo.imageFormat			   = pVulkanWindow->surfaceFormat.format;
+	swapchainInfo.minImageCount			   = pVulkanWindow->imageCount;
+	swapchainInfo.presentMode			   = pVulkanWindow->presentMode;
+	swapchainInfo.imageColorSpace		   = pVulkanWindow->surfaceFormat.colorSpace;
+	swapchainInfo.imageExtent.width		   = pVulkanWindow->pWindow->width;
+	swapchainInfo.imageExtent.height	   = pVulkanWindow->pWindow->height;
+	swapchainInfo.imageArrayLayers		   = 1;
+	swapchainInfo.imageUsage			   = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+	swapchainInfo.imageSharingMode		   = VK_SHARING_MODE_EXCLUSIVE;
+	swapchainInfo.preTransform			   = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR;
+	swapchainInfo.compositeAlpha		   = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
+	swapchainInfo.clipped				   = VK_TRUE;
+
+	VK_ASSERT(vkCreateSwapchainKHR(gCuVulkanContext.device, &swapchainInfo, CU_NULL, &pVulkanWindow->swapchain));
+	CU_LOG_DEBUG("Vulkan swapchain created successfully.");
+	cuReleaseStackPush(g_pReleaseStack, deleteSwapchain, pVulkanWindow);
+
+	CU_PLATFORM_API(cuFree)(surfaceFormats, sizeof(VkSurfaceFormatKHR) * surfaceFormatsCount);
+	CU_PLATFORM_API(cuFree)(presentModes, sizeof(VkPresentModeKHR) * presentModesCount);
+}
+
+static void deleteSwapchain(void* pUserData)
+{
+	CuVulkanWindow* pVulkanWindow = (CuVulkanWindow*)pUserData;
+	CU_ASSERT(gCuVulkanContext.device != VK_NULL_HANDLE);
+	CU_ASSERT(pVulkanWindow != CU_NULL);
+
+	vkDestroySwapchainKHR(gCuVulkanContext.device, pVulkanWindow->swapchain, CU_NULL);
+
+	CU_LOG_DEBUG("Vulkan swapchain destroyed successfully.");
+}
+
+static VkSurfaceFormatKHR chooseSwapSurfaceFormat(const VkSurfaceFormatKHR* availableFormats, u32 availableFormatsCount)
+{
+	for (u32 formatIndex = 0; formatIndex < availableFormatsCount; ++formatIndex)
+	{
+		if (availableFormats[formatIndex].format == VK_FORMAT_B8G8R8A8_SRGB &&
+			availableFormats[formatIndex].colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR)
+		{
+			return availableFormats[formatIndex];
+		}
+	}
+
+	return availableFormats[0];
+}
+
+static VkPresentModeKHR chooseSwapPresentMode(const VkPresentModeKHR* availablePresentModes,
+											  u32					  availablePresentModesCount)
+{
+	for (u32 presentModeIndex = 0; presentModeIndex < availablePresentModesCount; ++presentModeIndex)
+	{
+		if (availablePresentModes[presentModeIndex] == VK_PRESENT_MODE_MAILBOX_KHR)
+		{
+			return availablePresentModes[presentModeIndex];
+		}
+	}
+
+	return VK_PRESENT_MODE_FIFO_KHR;
+}
+
+static i32 getMinImageCountForSwapchain(const VkSurfaceCapabilitiesKHR* pSurfaceCapabilities)
+{
+	i32 minImageCount = pSurfaceCapabilities->minImageCount + 1;
+
+	if (pSurfaceCapabilities->maxImageCount > 0 && minImageCount > (i32)pSurfaceCapabilities->maxImageCount)
+	{
+		minImageCount = pSurfaceCapabilities->maxImageCount;
+	}
+
+	return minImageCount;
 }
 
 #endif // CU_USE_VULKAN

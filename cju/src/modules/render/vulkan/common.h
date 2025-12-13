@@ -17,6 +17,12 @@ typedef struct CuVulkanWindow
 {
 	CuWindow*	 pWindow;
 	VkSurfaceKHR surface; ///< The Vulkan surface associated with the window
+
+	VkSurfaceFormatKHR surfaceFormat; ///< The chosen surface format for the window
+	VkPresentModeKHR   presentMode;	  ///< The chosen present mode for the window
+	u32				   imageCount;	  ///< The number of images in the swapchain
+
+	VkSwapchainKHR swapchain; ///< The Vulkan swapchain for the window
 } CuVulkanWindow;
 
 typedef struct CuVulkanContext
