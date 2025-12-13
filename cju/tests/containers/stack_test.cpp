@@ -24,6 +24,16 @@ TEST(StackTest, PushPopTop)
 	CU_STACK_DESTROY(int, pStack);
 }
 
+TEST(StackTest, TopEmptyStack)
+{
+	CuStack* pStack = CU_STACK_CREATE(int);
+	EXPECT_NE(pStack, nullptr);
+
+	EXPECT_EXIT(CU_STACK_TOP(int, pStack);, ::testing::ExitedWithCode(CU_EXCEPTION_CODE_INDEX_OUT_OF_BOUNDS), "");
+
+	CU_STACK_DESTROY(int, pStack);
+}
+
 TEST(StackTest, MultiplePushPop)
 {
 	CuStack* pStack = CU_STACK_CREATE(int);

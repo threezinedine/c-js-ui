@@ -31,6 +31,12 @@ void* cuStackTop(CuStack* pStack)
 {
 	CU_ASSERT(pStack != CU_NULL);
 	CU_ASSERT(pStack->pList != CU_NULL);
+
+	if (pStack->pList->count == 0)
+	{
+		CU_RAISE_EXCEPTION(CU_EXCEPTION_CODE_INDEX_OUT_OF_BOUNDS, "Attempting to access top of an empty stack");
+	}
+
 	CU_ASSERT(pStack->pList->pTail != CU_NULL);
 
 	return pStack->pList->pTail->pData;

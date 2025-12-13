@@ -7,6 +7,7 @@ extern "C" {
 #include "array.h"
 #include "cju/platform/platform.h"
 #include "list.h"
+#include "queue.h"
 #include "stack.h"
 
 #if __cplusplus
