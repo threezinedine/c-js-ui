@@ -90,12 +90,12 @@ void debugbreak();
  * @example
  * ```C
  * CU_PLATFORM_API_DEFINE(void*, cuAllocate, u32 size);
- * // typedef void* (*FPN_cuAllocate)(u32 size);
- * // extern FPN_cuAllocate cuAllocate_default;
+ * // typedef void* (*PFN_cuAllocate)(u32 size);
+ * // extern PFN_cuAllocate cuAllocate_default;
  * ```
  */
 #define CU_PLATFORM_API_DEFINE(return, api, ...)                                                                       \
-	typedef return (*FPN_##api)(__VA_ARGS__);                                                                          \
+	typedef return (*PFN_##api)(__VA_ARGS__);                                                                          \
 	return api##_default(__VA_ARGS__);
 
 #include "console.h"

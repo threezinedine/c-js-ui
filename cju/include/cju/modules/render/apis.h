@@ -7,7 +7,7 @@
  * If the user does not provide an implementation, the default one will be used.
  */
 
-#define CU_RENDER_API_ATTRIBUTE(api) FPN_##api api
+#define CU_RENDER_API_ATTRIBUTE(api) PFN_##api api
 
 /**
  * Structure holding function pointers for rendering API implementations.
@@ -31,7 +31,7 @@ extern CuRenderAPI gCuRenderAPI;
  * CU_RENDER_API_SET(cuCustomRenderFunction, myCustomRenderFunction);
  * ```
  */
-#define CU_RENDER_API_SET(api, func) (gCuRenderAPI.api = (FPN_##api)func)
+#define CU_RENDER_API_SET(api, func) (gCuRenderAPI.api = (PFN_##api)func)
 
 /**
  * Macro to access a rendering API method, using the custom implementation

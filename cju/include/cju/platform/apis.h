@@ -13,7 +13,7 @@ extern "C" {
  * provide an implementation, the default one will be used (support Linux, Windows, Web).
  */
 
-#define CU_PLATFORM_API_ATTRIBUTE(api) FPN_##api api
+#define CU_PLATFORM_API_ATTRIBUTE(api) PFN_##api api
 
 /**
  * Structure holding function pointers for platform-specific API implementations.
@@ -39,7 +39,7 @@ typedef struct CuPlatformAPI
 
 extern CuPlatformAPI gCuPlatformAPI;
 
-#define CU_PLATFORM_API_SET(api, func) (gCuPlatformAPI.api = (FPN_##api)func)
+#define CU_PLATFORM_API_SET(api, func) (gCuPlatformAPI.api = (PFN_##api)func)
 
 #define CU_PLATFORM_API(api) (gCuPlatformAPI.api == CU_NULL ? api##_default : gCuPlatformAPI.api)
 

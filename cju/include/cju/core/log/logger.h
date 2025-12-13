@@ -28,23 +28,23 @@ typedef struct CuLoggerRecord
 /**
  * @brief Function pointer type for initializing a custom log handler.
  */
-typedef void (*FPN_CUHandlerInitalize)();
+typedef void (*PFN_CUHandlerInitalize)();
 
 /**
  * @brief Function pointer type for handling log records.
  */
-typedef void (*FPN_CUHandlerLog)(const CuLoggerRecord* record);
+typedef void (*PFN_CUHandlerLog)(const CuLoggerRecord* record);
 
 /**
  * @brief Function pointer type for shutting down a custom log handler.
  */
-typedef void (*FPN_CUHandlerShutdown)();
+typedef void (*PFN_CUHandlerShutdown)();
 
 typedef struct CuHandler
 {
-	FPN_CUHandlerInitalize initialize; ///< Can be null.
-	FPN_CUHandlerLog	   log;		   ///< Must not be null.
-	FPN_CUHandlerShutdown  shutdown;   ///< Can be null.
+	PFN_CUHandlerInitalize initialize; ///< Can be null.
+	PFN_CUHandlerLog	   log;		   ///< Must not be null.
+	PFN_CUHandlerShutdown  shutdown;   ///< Can be null.
 } CuHandler;
 
 typedef struct CuLoggerConfig

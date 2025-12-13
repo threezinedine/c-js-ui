@@ -8,10 +8,10 @@
  * @example examples/modules/rendering/custom_renderer.c
  * ```c
  * CU_RENDER_API_DEFINE(void, cuCustomRenderFunction, CuRenderTarget* pTarget)
- * // typedef void (*FPN_cuCustomRenderFunction)(CuRenderTarget* pTarget);
+ * // typedef void (*PFN_cuCustomRenderFunction)(CuRenderTarget* pTarget);
  * void cuCustomRenderFunction_default(CuRenderTarget* pTarget);
  * ```
  */
 #define CU_RENDERER_API_DEFINE(return, api, ...)                                                                       \
-	typedef return (*FPN_##api)(__VA_ARGS__);                                                                          \
+	typedef return (*PFN_##api)(__VA_ARGS__);                                                                          \
 	return api##_default(__VA_ARGS__);

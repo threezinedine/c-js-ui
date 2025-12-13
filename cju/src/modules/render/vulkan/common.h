@@ -7,12 +7,19 @@
 typedef struct CuVulkanContext
 {
 	VkInstance instance;
+
+#if CU_DEBUG
+	VkDebugUtilsMessengerEXT debugMessenger; ///< Only used in debug mode for validation layers
+
+#endif // CU_DEBUG
+
 } CuVulkanContext;
 
 extern CuVulkanContext gCuVulkanContext;
 
 const char* gVulkanInstanceExtensions[] = {
 	"VK_KHR_surface",
+	"VK_EXT_debug_utils",
 };
 
 const char* gVulkanInstanceLayers[] = {
