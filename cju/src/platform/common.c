@@ -1,3 +1,4 @@
+#include "cju/platform/memory.h"
 #include "cju/platform/platform.h"
 #include <assert.h>
 

@@ -210,4 +210,13 @@ static int fullBacktrace(void* data, uintptr_t pc, const char* filename, int lin
 	}
 }
 #endif // CU_PLATFORM_UNIX || CU_PLATFORM_WEB
+
+void printCurrentTrace()
+{
+#if CU_DEBUG
+	TraceInfo traceInfo;
+	cuGetCurrentTrace(&traceInfo);
+	cuPrintTrace(&traceInfo);
+#endif
+}
 #endif // CU_DEBUG

@@ -37,6 +37,7 @@ void debugbreak();
 			cuConsoleSetColor(CU_CONSOLE_COLOR_RED);                                                                   \
 			cuPrintFormat("Assertion failed: %s, file %s, line %d\n", #cond, __FILE__, __LINE__);                      \
 			cuConsoleSetColor(CU_CONSOLE_COLOR_RESET);                                                                 \
+			printCurrentTrace();                                                                                       \
 			debugbreak();                                                                                              \
 		}                                                                                                              \
 	} while (CU_FALSE)
@@ -51,6 +52,7 @@ void debugbreak();
 			cuBufferedString(buffer, sizeof(buffer), msg, ##__VA_ARGS__);                                              \
 			cuPrintFormat("Assertion failed: message: %s, file %s, line %d\n", buffer, __FILE__, __LINE__);            \
 			cuConsoleSetColor(CU_CONSOLE_COLOR_RESET);                                                                 \
+			printCurrentTrace();                                                                                       \
 			debugbreak();                                                                                              \
 		}                                                                                                              \
 	} while (CU_FALSE)
@@ -61,6 +63,7 @@ void debugbreak();
 		cuConsoleSetColor(CU_CONSOLE_COLOR_RED);                                                                       \
 		cuPrintFormat("Unreachable code reached: file %s, line %d\n", __FILE__, __LINE__);                             \
 		cuConsoleSetColor(CU_CONSOLE_COLOR_RESET);                                                                     \
+		printCurrentTrace();                                                                                           \
 		debugbreak();                                                                                                  \
 	} while (CU_FALSE)
 #else

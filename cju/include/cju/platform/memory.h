@@ -66,11 +66,9 @@ void cuGetCurrentTrace(TraceInfo* pOutTraceInfo);
  */
 void cuPrintTrace(const TraceInfo* pTraceInfo);
 
-#define CU_CURRENT_TRACE()                                                                                             \
-	do                                                                                                                 \
-	{                                                                                                                  \
-		TraceInfo traceInfo;                                                                                           \
-		cuGetCurrentTrace(&traceInfo);                                                                                 \
-		cuPrintTrace(&traceInfo);                                                                                      \
-	} while (CU_FALSE)
-#endif
+/**
+ * Prints the current trace information to help with debugging.
+ */
+void printCurrentTrace();
+
+#endif // CU_DEBUG
