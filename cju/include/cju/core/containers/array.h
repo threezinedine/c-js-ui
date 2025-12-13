@@ -114,116 +114,116 @@ void cuArrayFree(CuArray* pArray);
  *
  * @return A pointer to the defined array structure.
  */
-#define CU_ARRAY_INIT(T, cap) (cuArrayInit(sizeof(T), (cap), #T))
+#define CU_ARRAY_CREATE(T, cap) (cuArrayInit(sizeof(T), (cap), #T))
 #else
-#define CU_ARRAY_INIT(T, cap) (cuArrayInit(sizeof(T), (cap)))
+#define CU_ARRAY_CREATE(T, cap) (cuArrayInit(sizeof(T), (cap)))
 #endif
 
 #if CU_DEBUG
-#define CU_ARRAY_TYPE_ASSERT(T, vec)                                                                                   \
+#define CU_ARRAY_TYPE_ASSERT(T, arr)                                                                                   \
 	do                                                                                                                 \
 	{                                                                                                                  \
-		if (cuStrEqual(#T, (vec)->pTypeName) == CU_FALSE)                                                              \
+		if (cuStrEqual(#T, (arr)->pTypeName) == CU_FALSE)                                                              \
 		{                                                                                                              \
 			CU_RAISE_EXCEPTION(CU_EXCEPTION_CODE_INVALID_TYPE,                                                         \
 							   "Type mismatch: expected array of type '%s', but got type '%s'",                        \
-							   (vec)->pTypeName,                                                                       \
+							   (arr)->pTypeName,                                                                       \
 							   #T);                                                                                    \
 		}                                                                                                              \
 	} while (CU_FALSE)
 #else
-#define CU_ARRAY_TYPE_ASSERT(T, vec)
+#define CU_ARRAY_TYPE_ASSERT(T, arr)
 #endif
 
 /**
  * Macro to add a new element to the end of a typed array.
  *
  * @param T The type of elements in the array.
- * @param vec A pointer to the CuArray to which the element will be added.
+ * @param arr A pointer to the CuArray to which the element will be added.
  * @param value The value of the element to add to the array.
  */
-#define CU_ARRAY_PUSH_BACK(T, vec, value)                                                                              \
+#define CU_ARRAY_PUSH_BACK(T, arr, value)                                                                              \
 	do                                                                                                                 \
 	{                                                                                                                  \
-		CU_ARRAY_TYPE_ASSERT(T, vec);                                                                                  \
+		CU_ARRAY_TYPE_ASSERT(T, arr);                                                                                  \
 		T rightValue = value;                                                                                          \
-		cuArrayPushBack((CuArray*)(vec), &rightValue);                                                                 \
+		cuArrayPushBack((CuArray*)(arr), &rightValue);                                                                 \
 	} while (CU_FALSE)
 
 /**
  * Macro to insert a new element at the specified index in a typed array.
  *
  * @param T The type of elements in the array.
- * @param vec A pointer to the CuArray in which the element will be inserted.
+ * @param arr A pointer to the CuArray in which the element will be inserted.
  * @param index The index at which to insert the new element.
  * @param value The value of the element to insert into the array.
  */
-#define CU_ARRAY_INSERT(T, vec, index, value)                                                                          \
+#define CU_ARRAY_INSERT(T, arr, index, value)                                                                          \
 	do                                                                                                                 \
 	{                                                                                                                  \
-		CU_ARRAY_TYPE_ASSERT(T, vec);                                                                                  \
+		CU_ARRAY_TYPE_ASSERT(T, arr);                                                                                  \
 		T rightValue = value;                                                                                          \
-		cuArrayInsert((CuArray*)(vec), (index), &rightValue);                                                          \
+		cuArrayInsert((CuArray*)(arr), (index), &rightValue);                                                          \
 	} while (CU_FALSE)
 
 /**
  * Macro to remove the element at the specified index from a typed array.
  * @param T The type of elements in the array.
- * @param vec A pointer to the CuArray from which the element will be removed.
+ * @param arr A pointer to the CuArray from which the element will be removed.
  * @param index The index of the element to remove.
  */
-#define CU_ARRAY_REMOVE_AT(T, vec, index)                                                                              \
+#define CU_ARRAY_REMOVE_AT(T, arr, index)                                                                              \
 	do                                                                                                                 \
 	{                                                                                                                  \
-		CU_ARRAY_TYPE_ASSERT(T, vec);                                                                                  \
-		cuArrayRemoveAt((CuArray*)(vec), (index));                                                                     \
+		CU_ARRAY_TYPE_ASSERT(T, arr);                                                                                  \
+		cuArrayRemoveAt((CuArray*)(arr), (index));                                                                     \
 	} while (CU_FALSE)
 
 /**
  * Macro to retrieve a pointer to the element at the specified index in a typed array.
  * @param T The type of elements in the array.
- * @param vec A pointer to the Cu
+ * @param arr A pointer to the Cu
  * Array from which to retrieve the element.
  * @param index The index of the element to retrieve.
  * @return A pointer to the element at the specified index.
  */
-#define CU_ARRAY_GET(T, vec, index)                                                                                    \
-	((T*)(cuArrayGet((vec), (index))));                                                                                \
+#define CU_ARRAY_GET(T, arr, index)                                                                                    \
+	((T*)(cuArrayGet((arr), (index))));                                                                                \
 	do                                                                                                                 \
 	{                                                                                                                  \
-		CU_ARRAY_TYPE_ASSERT(T, vec);                                                                                  \
+		CU_ARRAY_TYPE_ASSERT(T, arr);                                                                                  \
 	} while (CU_FALSE)
 
-#define CU_ARRAY_CLEAR(T, vec)                                                                                         \
+#define CU_ARRAY_CLEAR(T, arr)                                                                                         \
 	do                                                                                                                 \
 	{                                                                                                                  \
-		CU_ARRAY_TYPE_ASSERT(T, vec);                                                                                  \
-		cuArrayClear((CuArray*)(vec));                                                                                 \
+		CU_ARRAY_TYPE_ASSERT(T, arr);                                                                                  \
+		cuArrayClear((CuArray*)(arr));                                                                                 \
 	} while (CU_FALSE)
 
 /**
  * Macro to resize a typed array to a new capacity.
  *
  * @param T The type of elements in the array.
- * @param vec A pointer to the CuArray to resize.
+ * @param arr A pointer to the CuArray to resize.
  * @param newCap The new capacity for the array.
  */
-#define CU_ARRAY_RESIZE(T, vec, newCap)                                                                                \
+#define CU_ARRAY_RESIZE(T, arr, newCap)                                                                                \
 	do                                                                                                                 \
 	{                                                                                                                  \
-		CU_ARRAY_TYPE_ASSERT(T, vec);                                                                                  \
-		cuArrayResize((CuArray*)(vec), (newCap));                                                                      \
+		CU_ARRAY_TYPE_ASSERT(T, arr);                                                                                  \
+		cuArrayResize((CuArray*)(arr), (newCap));                                                                      \
 	} while (CU_FALSE)
 
 /**
  * Macro to free a typed array.
  *
  * @param T The type of elements in the array.
- * @param vec A pointer to the CuArray to free.
+ * @param arr A pointer to the CuArray to free.
  */
-#define CU_ARRAY_FREE(T, vec)                                                                                          \
+#define CU_ARRAY_DELETE(T, arr)                                                                                        \
 	do                                                                                                                 \
 	{                                                                                                                  \
-		CU_ARRAY_TYPE_ASSERT(T, vec);                                                                                  \
-		cuArrayFree((CuArray*)(vec));                                                                                  \
+		CU_ARRAY_TYPE_ASSERT(T, arr);                                                                                  \
+		cuArrayFree((CuArray*)(arr));                                                                                  \
 	} while (CU_FALSE)

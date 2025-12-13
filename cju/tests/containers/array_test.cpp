@@ -2,83 +2,83 @@
 
 TEST(ArrayTest, Initialization)
 {
-	CuArray* pArray = CU_ARRAY_INIT(int, 10);
+	CuArray* pArray = CU_ARRAY_CREATE(int, 10);
 
 	EXPECT_EQ(pArray->count, 0);
 	EXPECT_EQ(pArray->capacity, 10);
 
-	CU_ARRAY_FREE(int, pArray);
+	CU_ARRAY_DELETE(int, pArray);
 }
 
 TEST(ArrayTest, ResizeWithSmallerCapacity)
 {
-	CuArray* pArray = CU_ARRAY_INIT(int, 10);
+	CuArray* pArray = CU_ARRAY_CREATE(int, 10);
 
 	CU_ARRAY_RESIZE(int, pArray, 5);
 
 	EXPECT_EQ(pArray->count, 0);
 	EXPECT_EQ(pArray->capacity, 10);
 
-	CU_ARRAY_FREE(int, pArray);
+	CU_ARRAY_DELETE(int, pArray);
 }
 
 TEST(ArrayTest, ResizeWithLargerCapacity)
 {
-	CuArray* pArray = CU_ARRAY_INIT(int, 10);
+	CuArray* pArray = CU_ARRAY_CREATE(int, 10);
 
 	CU_ARRAY_RESIZE(int, pArray, 20);
 
 	EXPECT_EQ(pArray->count, 0);
 	EXPECT_EQ(pArray->capacity, 20);
 
-	CU_ARRAY_FREE(int, pArray);
+	CU_ARRAY_DELETE(int, pArray);
 }
 
 TEST(ArrayTest, PushBack)
 {
-	CuArray* pArray = CU_ARRAY_INIT(int, 2);
+	CuArray* pArray = CU_ARRAY_CREATE(int, 2);
 
 	CU_ARRAY_PUSH_BACK(int, pArray, 1);
 
-	CU_ARRAY_FREE(int, pArray);
+	CU_ARRAY_DELETE(int, pArray);
 }
 
 TEST(ArrayTest, GetIndex)
 {
-	CuArray* pArray = CU_ARRAY_INIT(int, 2);
+	CuArray* pArray = CU_ARRAY_CREATE(int, 2);
 
 	CU_ARRAY_PUSH_BACK(int, pArray, 42);
 	int* value = CU_ARRAY_GET(int, pArray, 0);
 	EXPECT_EQ(*value, 42);
 
-	CU_ARRAY_FREE(int, pArray);
+	CU_ARRAY_DELETE(int, pArray);
 }
 
 TEST(ArrayTest, GetIndexOutOfBounds)
 {
-	CuArray* pArray = CU_ARRAY_INIT(int, 2);
+	CuArray* pArray = CU_ARRAY_CREATE(int, 2);
 
 	CU_ARRAY_PUSH_BACK(int, pArray, 42);
 
 	EXPECT_EXIT(
 		{ CU_ARRAY_GET(int, pArray, 1); }, ::testing::ExitedWithCode(CU_EXCEPTION_CODE_INDEX_OUT_OF_BOUNDS), "");
 
-	CU_ARRAY_FREE(int, pArray);
+	CU_ARRAY_DELETE(int, pArray);
 }
 
 TEST(ArrayTest, DoSomethingWithDifferentType)
 {
-	CuArray* pArray = CU_ARRAY_INIT(double, 3);
+	CuArray* pArray = CU_ARRAY_CREATE(double, 3);
 
 	CU_ARRAY_PUSH_BACK(double, pArray, 3.14);
 	EXPECT_EXIT(CU_ARRAY_GET(int, pArray, 0), ::testing::ExitedWithCode(CU_EXCEPTION_CODE_INVALID_TYPE), "");
 
-	CU_ARRAY_FREE(double, pArray);
+	CU_ARRAY_DELETE(double, pArray);
 }
 
 TEST(ArrayTest, PushIndexOutOfCapacity)
 {
-	CuArray* pArray = CU_ARRAY_INIT(int, 2);
+	CuArray* pArray = CU_ARRAY_CREATE(int, 2);
 
 	CU_ARRAY_PUSH_BACK(int, pArray, 1);
 	CU_ARRAY_PUSH_BACK(int, pArray, 2);
@@ -90,12 +90,12 @@ TEST(ArrayTest, PushIndexOutOfCapacity)
 	int* value = CU_ARRAY_GET(int, pArray, 2);
 	EXPECT_EQ(*value, 3);
 
-	CU_ARRAY_FREE(int, pArray);
+	CU_ARRAY_DELETE(int, pArray);
 }
 
 TEST(ArrayTest, Clear)
 {
-	CuArray* pArray = CU_ARRAY_INIT(int, 2);
+	CuArray* pArray = CU_ARRAY_CREATE(int, 2);
 
 	CU_ARRAY_PUSH_BACK(int, pArray, 1);
 	CU_ARRAY_PUSH_BACK(int, pArray, 2);
@@ -108,12 +108,12 @@ TEST(ArrayTest, Clear)
 	EXPECT_EQ(pArray->count, 0);
 	EXPECT_EQ(pArray->capacity, 4);
 
-	CU_ARRAY_FREE(int, pArray);
+	CU_ARRAY_DELETE(int, pArray);
 }
 
 TEST(ArrayTest, ArrayWithPointer)
 {
-	CuArray* pArray = CU_ARRAY_INIT(int*, 2);
+	CuArray* pArray = CU_ARRAY_CREATE(int*, 2);
 
 	int a = 10;
 	int b = 20;
@@ -127,12 +127,12 @@ TEST(ArrayTest, ArrayWithPointer)
 	EXPECT_EQ(**ptrA, 10);
 	EXPECT_EQ(**ptrB, 20);
 
-	CU_ARRAY_FREE(int*, pArray);
+	CU_ARRAY_DELETE(int*, pArray);
 }
 
 TEST(ArrayTest, InsertAtTheBegging)
 {
-	CuArray* pArray = CU_ARRAY_INIT(int, 2);
+	CuArray* pArray = CU_ARRAY_CREATE(int, 2);
 
 	CU_ARRAY_PUSH_BACK(int, pArray, 2);
 	CU_ARRAY_PUSH_BACK(int, pArray, 3);
@@ -144,12 +144,12 @@ TEST(ArrayTest, InsertAtTheBegging)
 	int* firstValue = CU_ARRAY_GET(int, pArray, 0);
 	EXPECT_EQ(*firstValue, 1);
 
-	CU_ARRAY_FREE(int, pArray);
+	CU_ARRAY_DELETE(int, pArray);
 }
 
 TEST(ArrayTest, InsertAtTheMiddle)
 {
-	CuArray* pArray = CU_ARRAY_INIT(int, 2);
+	CuArray* pArray = CU_ARRAY_CREATE(int, 2);
 
 	CU_ARRAY_PUSH_BACK(int, pArray, 1);
 	CU_ARRAY_PUSH_BACK(int, pArray, 3);
@@ -161,12 +161,12 @@ TEST(ArrayTest, InsertAtTheMiddle)
 	int* secondValue = CU_ARRAY_GET(int, pArray, 1);
 	EXPECT_EQ(*secondValue, 2);
 
-	CU_ARRAY_FREE(int, pArray);
+	CU_ARRAY_DELETE(int, pArray);
 }
 
 TEST(ArrayTest, InsertAtTheEnd)
 {
-	CuArray* pArray = CU_ARRAY_INIT(int, 2);
+	CuArray* pArray = CU_ARRAY_CREATE(int, 2);
 
 	CU_ARRAY_PUSH_BACK(int, pArray, 1);
 	CU_ARRAY_PUSH_BACK(int, pArray, 2);
@@ -178,12 +178,12 @@ TEST(ArrayTest, InsertAtTheEnd)
 	int* thirdValue = CU_ARRAY_GET(int, pArray, 2);
 	EXPECT_EQ(*thirdValue, 3);
 
-	CU_ARRAY_FREE(int, pArray);
+	CU_ARRAY_DELETE(int, pArray);
 }
 
 TEST(ArrayTest, InsertAtOutOfBoundsIndex)
 {
-	CuArray* pArray = CU_ARRAY_INIT(int, 2);
+	CuArray* pArray = CU_ARRAY_CREATE(int, 2);
 
 	CU_ARRAY_PUSH_BACK(int, pArray, 1);
 	CU_ARRAY_PUSH_BACK(int, pArray, 2);
@@ -191,12 +191,12 @@ TEST(ArrayTest, InsertAtOutOfBoundsIndex)
 	EXPECT_EXIT(
 		{ CU_ARRAY_INSERT(int, pArray, 3, 3); }, ::testing::ExitedWithCode(CU_EXCEPTION_CODE_INDEX_OUT_OF_BOUNDS), "");
 
-	CU_ARRAY_FREE(int, pArray);
+	CU_ARRAY_DELETE(int, pArray);
 }
 
 TEST(ArrayTest, RemoveAtBegging)
 {
-	CuArray* pArray = CU_ARRAY_INIT(int, 2);
+	CuArray* pArray = CU_ARRAY_CREATE(int, 2);
 
 	CU_ARRAY_PUSH_BACK(int, pArray, 1);
 	CU_ARRAY_PUSH_BACK(int, pArray, 2);
@@ -212,12 +212,12 @@ TEST(ArrayTest, RemoveAtBegging)
 	int* firstValue = CU_ARRAY_GET(int, pArray, 0);
 	EXPECT_EQ(*firstValue, 2);
 
-	CU_ARRAY_FREE(int, pArray);
+	CU_ARRAY_DELETE(int, pArray);
 }
 
 TEST(ArrayTest, RemoveAtMiddle)
 {
-	CuArray* pArray = CU_ARRAY_INIT(int, 2);
+	CuArray* pArray = CU_ARRAY_CREATE(int, 2);
 
 	CU_ARRAY_PUSH_BACK(int, pArray, 1);
 	CU_ARRAY_PUSH_BACK(int, pArray, 2);
@@ -230,12 +230,12 @@ TEST(ArrayTest, RemoveAtMiddle)
 	int* secondValue = CU_ARRAY_GET(int, pArray, 1);
 	EXPECT_EQ(*secondValue, 3);
 
-	CU_ARRAY_FREE(int, pArray);
+	CU_ARRAY_DELETE(int, pArray);
 }
 
 TEST(ArrayTest, RemoveAtEnd)
 {
-	CuArray* pArray = CU_ARRAY_INIT(int, 2);
+	CuArray* pArray = CU_ARRAY_CREATE(int, 2);
 
 	CU_ARRAY_PUSH_BACK(int, pArray, 1);
 	CU_ARRAY_PUSH_BACK(int, pArray, 2);
@@ -251,5 +251,5 @@ TEST(ArrayTest, RemoveAtEnd)
 	int* firstValue = CU_ARRAY_GET(int, pArray, 0);
 	EXPECT_EQ(*firstValue, 1);
 
-	CU_ARRAY_FREE(int, pArray);
+	CU_ARRAY_DELETE(int, pArray);
 }

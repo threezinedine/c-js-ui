@@ -12,9 +12,9 @@ CuArray* s_pLoggers = CU_NULL;
 void cuLoggerInitialize(const CuLoggerConfig* pConfig)
 {
 	CU_ASSERT(s_pLoggers == CU_NULL);
-	s_pLoggers = CU_ARRAY_INIT(CuLogger, 4);
+	s_pLoggers = CU_ARRAY_CREATE(CuLogger, 4);
 
-	CuLogger rootLogger = {.pHandlers = CU_ARRAY_INIT(CuHandler, 4), .minLogLevel = pConfig->minLogLevel};
+	CuLogger rootLogger = {.pHandlers = CU_ARRAY_CREATE(CuHandler, 4), .minLogLevel = pConfig->minLogLevel};
 	CU_ARRAY_PUSH_BACK(CuLogger, s_pLoggers, rootLogger);
 }
 

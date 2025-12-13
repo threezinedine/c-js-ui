@@ -11,6 +11,8 @@ const char* cuConvertExceptionCodeToString(CuExceptionCode code)
 		return "INDEX_OUT_OF_BOUNDS";
 	case CU_EXCEPTION_CODE_INVALID_TYPE:
 		return "INVALID_TYPE";
+	case CU_EXCEPTION_CODE_INVALID_OWNER:
+		return "INVALID_OWNER";
 	// Add more cases as needed.
 	default:
 		CU_UNREACHABLE();
