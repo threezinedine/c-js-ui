@@ -4,6 +4,7 @@
 extern "C" {
 #endif
 #include "common.h"
+#include "window.h"
 
 /**
  * @file apis.h
@@ -12,7 +13,7 @@ extern "C" {
  * provide an implementation, the default one will be used (support Linux, Windows, Web).
  */
 
-#define CU_PLATFORM_API_ATTRIBUTE(api) FPN_##api api;
+#define CU_PLATFORM_API_ATTRIBUTE(api) FPN_##api api
 
 /**
  * Structure holding function pointers for platform-specific API implementations.
@@ -22,11 +23,18 @@ extern "C" {
 typedef struct CuPlatformAPI
 {
 	// memory.h
-	CU_PLATFORM_API_ATTRIBUTE(cuAllocate)
-	CU_PLATFORM_API_ATTRIBUTE(cuFree)
-	CU_PLATFORM_API_ATTRIBUTE(cuMemorySet)
-	CU_PLATFORM_API_ATTRIBUTE(cuMemoryCopy)
-	CU_PLATFORM_API_ATTRIBUTE(cuMemoryAssertNoLeaks)
+	CU_PLATFORM_API_ATTRIBUTE(cuAllocate);
+	CU_PLATFORM_API_ATTRIBUTE(cuFree);
+	CU_PLATFORM_API_ATTRIBUTE(cuMemorySet);
+	CU_PLATFORM_API_ATTRIBUTE(cuMemoryCopy);
+	CU_PLATFORM_API_ATTRIBUTE(cuMemoryAssertNoLeaks);
+
+	// window.h
+	CU_PLATFORM_API_ATTRIBUTE(cuWindowInitialize);
+	CU_PLATFORM_API_ATTRIBUTE(cuWindowCreate);
+	CU_PLATFORM_API_ATTRIBUTE(cuWindowPollEvents);
+	CU_PLATFORM_API_ATTRIBUTE(cuWindowDestroy);
+	CU_PLATFORM_API_ATTRIBUTE(cuWindowShutdown);
 } CuPlatformAPI;
 
 extern CuPlatformAPI gCuPlatformAPI;

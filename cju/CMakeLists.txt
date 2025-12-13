@@ -44,7 +44,7 @@ set(CU_DEFINITIONS
 set(CU_TARGET_LINK_OPTIONS)
 
 if (CU_PLATFORM_UNIX)
-    list(APPEND CU_TARGET_LINK_OPTIONS -rdynamic)
+    list(APPEND CU_TARGET_LINK_OPTIONS)
 endif()
 
 set(CU_LINK_LIBS
@@ -52,7 +52,7 @@ set(CU_LINK_LIBS
 )
 
 if (CU_PLATFORM_UNIX)
-    list(APPEND CU_LINK_LIBS dl m pthread)
+    list(APPEND CU_LINK_LIBS dl m pthread X11)
 endif()
 
 set(STATIC_PROJECT_NAME "${PROJECT_NAME}-static")

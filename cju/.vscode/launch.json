@@ -23,6 +23,14 @@
 			"preLaunchTask": "Build",
 			"program": "${workspaceRoot}/build/linux/debug/tests/CJUTests",
 			"cwd": "${workspaceRoot}/build/linux/debug/tests"
+		},
+		{
+			"name": "Example: Window",
+			"type": "cppdbg",
+			"request": "launch",
+			"preLaunchTask": "Build",
+			"program": "${workspaceRoot}/build/linux/debug/examples/platforms/window",
+			"cwd": "${workspaceRoot}/build/linux/debug/examples/platforms"
 		}
 	]
 }
