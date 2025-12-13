@@ -108,17 +108,17 @@ void cuFree_default(void* ptr, u32 size)
 #endif
 }
 
-void cuMemorySet(void* dest, u8 value, u32 size)
+void cuMemorySet_default(void* dest, u8 value, u32 size)
 {
 	memset(dest, value, size);
 }
 
-void cuMemoryCopy(void* dest, const void* src, u32 size)
+void cuMemoryCopy_default(void* dest, const void* src, u32 size)
 {
 	memcpy(dest, src, size);
 }
 
-void cuMemoryAssertNoLeaks()
+void cuMemoryAssertNoLeaks_default()
 {
 #if CU_DEBUG
 	if (gMemoryBlocksHead != CU_NULL)

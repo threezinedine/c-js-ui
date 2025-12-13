@@ -21,8 +21,12 @@ extern "C" {
  */
 typedef struct CuPlatformAPI
 {
+	// memory.h
 	CU_PLATFORM_API_ATTRIBUTE(cuAllocate)
 	CU_PLATFORM_API_ATTRIBUTE(cuFree)
+	CU_PLATFORM_API_ATTRIBUTE(cuMemorySet)
+	CU_PLATFORM_API_ATTRIBUTE(cuMemoryCopy)
+	CU_PLATFORM_API_ATTRIBUTE(cuMemoryAssertNoLeaks)
 } CuPlatformAPI;
 
 extern CuPlatformAPI gCuPlatformAPI;

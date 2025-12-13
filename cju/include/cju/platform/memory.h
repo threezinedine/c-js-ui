@@ -34,7 +34,7 @@ CU_PLATFORM_API_DEFINE(void, cuFree, void* ptr, u32 size);
  * @param value The value to set each byte of the memory block to.
  * @param size  The size of the memory block to set in bytes.
  */
-void cuMemorySet(void* dest, u8 value, u32 size);
+CU_PLATFORM_API_DEFINE(void, cuMemorySet, void* dest, u8 value, u32 size);
 
 /**
  * Copies a block of memory from a source to a destination.
@@ -43,13 +43,13 @@ void cuMemorySet(void* dest, u8 value, u32 size);
  * @param src  A pointer to the source memory block.
  * @param size The size of the memory block to copy in bytes.
  */
-void cuMemoryCopy(void* dest, const void* src, u32 size);
+CU_PLATFORM_API_DEFINE(void, cuMemoryCopy, void* dest, const void* src, u32 size);
 
 /**
  * Asserts that there are no memory leaks.
  * This function can be used in debug builds to verify that all allocated memory has been freed.
  */
-void cuMemoryAssertNoLeaks();
+CU_PLATFORM_API_DEFINE(void, cuMemoryAssertNoLeaks);
 
 #if CU_DEBUG
 /**

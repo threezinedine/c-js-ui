@@ -6,7 +6,7 @@ int main()
 
 	// CU_PLATFORM_API(cuFree)(ptr, 3);
 
-	cuMemoryAssertNoLeaks();
+	CU_PLATFORM_API(cuMemoryAssertNoLeaks)();
 
 	return 0;
 }

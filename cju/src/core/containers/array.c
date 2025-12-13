@@ -30,7 +30,7 @@ void cuArrayResize(CuArray* pArray, u32 newCapacity)
 	}
 
 	void* pNewData = CU_PLATFORM_API(cuAllocate)(pArray->elementSize * newCapacity);
-	cuMemoryCopy(pNewData, pArray->pData, pArray->elementSize * pArray->count);
+	CU_PLATFORM_API(cuMemoryCopy)(pNewData, pArray->pData, pArray->elementSize * pArray->count);
 
 	CU_PLATFORM_API(cuFree)(pArray->pData, pArray->elementSize * pArray->capacity);
 
@@ -50,7 +50,7 @@ void cuArrayPushBack(CuArray* pArray, const void* pElement)
 	}
 
 	u8* pDest = (u8*)pArray->pData + (pArray->count * pArray->elementSize);
-	cuMemoryCopy(pDest, pElement, pArray->elementSize);
+	CU_PLATFORM_API(cuMemoryCopy)(pDest, pElement, pArray->elementSize);
 	pArray->count++;
 }
 
@@ -83,10 +83,10 @@ void cuArrayInsert(CuArray* pArray, u32 index, const void* pElement)
 	{
 		u8* pDest = (u8*)(pArray->pData + (i * pArray->elementSize));
 		u8* pSrc  = (u8*)(pArray->pData + ((i + 1) * pArray->elementSize));
-		cuMemoryCopy(pDest, pSrc, pArray->elementSize);
+		CU_PLATFORM_API(cuMemoryCopy)(pDest, pSrc, pArray->elementSize);
 	}
 
-	cuMemoryCopy(cuArrayGet(pArray, index), pElement, pArray->elementSize);
+	CU_PLATFORM_API(cuMemoryCopy)(cuArrayGet(pArray, index), pElement, pArray->elementSize);
 	pArray->count++;
 }
 
@@ -106,7 +106,7 @@ void cuArrayRemoveAt(CuArray* pArray, u32 index)
 	{
 		void* pSrc	= cuArrayGet(pArray, i + 1);
 		void* pDest = cuArrayGet(pArray, i);
-		cuMemoryCopy(pDest, pSrc, pArray->elementSize);
+		CU_PLATFORM_API(cuMemoryCopy)(pDest, pSrc, pArray->elementSize);
 	}
 	pArray->count--;
 }
