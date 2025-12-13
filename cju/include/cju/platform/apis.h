@@ -31,6 +31,8 @@ typedef struct CuPlatformAPI
 
 extern CuPlatformAPI gCuPlatformAPI;
 
+#define CU_PLATFORM_API_SET(api, func) (gCuPlatformAPI.api = (FPN_##api)func)
+
 #define CU_PLATFORM_API(api) (gCuPlatformAPI.api == CU_NULL ? api##_default : gCuPlatformAPI.api)
 
 #if __cplusplus

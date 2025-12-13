@@ -46,6 +46,11 @@
 					"name": "memory",
 					"linuxPath": "{{ BUILD_DIR }}/examples/platforms/memory",
 					"windowsPath": "{{ BUILD_DIR }}/examples/platforms/{{ BUILD_TYPE|capitalize }}/memory.exe"
+				},
+				{
+					"name": "override_memory",
+					"linuxPath": "{{ BUILD_DIR }}/examples/platforms/override_memory",
+					"windowsPath": "{{ BUILD_DIR }}/examples/platforms/{{ BUILD_TYPE|capitalize }}/override_memory.exe"
 				}
 			]
 		}
