@@ -20,6 +20,7 @@ static void createLogicalDevice();
 static void createSurface(CuVulkanWindow* pVulkanWindow);
 static void createSwapchain(CuVulkanWindow* pVulkanWindow);
 static void getSwapchainImages(CuVulkanWindow* pVulkanWindow);
+static void createSwapchainImageViews(CuVulkanWindow* pVulkanWindow);
 
 #if CU_DEBUG
 static void createDebugMessenger();
@@ -69,6 +70,7 @@ void cuRendererInitialize()
 
 		createSwapchain(g_pMainWindow);
 		getSwapchainImages(g_pMainWindow);
+		createSwapchainImageViews(g_pMainWindow);
 	}
 }
 
@@ -627,6 +629,63 @@ static void freeSwapchainImages(void* pUserData)
 
 	CU_ARRAY_DELETE(VkImage, pVulkanWindow->pSwapchainImages);
 	pVulkanWindow->pSwapchainImages = CU_NULL;
+}
+
+static void destroySwapchainImageViews(void* pUserData);
+static void createSwapchainImageViews(CuVulkanWindow* pVulkanWindow)
+{
+	CU_ASSERT(pVulkanWindow != CU_NULL);
+	CU_ASSERT(pVulkanWindow->pSwapchainImageViews == CU_NULL);
+	CU_ASSERT(gCuVulkanContext.device != VK_NULL_HANDLE);
+
+	u32 swapchainImagesCount			= pVulkanWindow->pSwapchainImages->count;
+	pVulkanWindow->pSwapchainImageViews = CU_ARRAY_CREATE(VkImageView, swapchainImagesCount);
+
+	for (u32 imageIndex = 0u; imageIndex < swapchainImagesCount; ++imageIndex)
+	{
+		VkImage* pImage = CU_ARRAY_GET(VkImage, pVulkanWindow->pSwapchainImages, imageIndex);
+
+		VkImageViewCreateInfo imageViewInfo			  = {};
+		imageViewInfo.sType							  = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+		imageViewInfo.image							  = *pImage;
+		imageViewInfo.viewType						  = VK_IMAGE_VIEW_TYPE_2D;
+		imageViewInfo.format						  = pVulkanWindow->surfaceFormat.format;
+		imageViewInfo.components.r					  = VK_COMPONENT_SWIZZLE_IDENTITY;
+		imageViewInfo.components.g					  = VK_COMPONENT_SWIZZLE_IDENTITY;
+		imageViewInfo.components.b					  = VK_COMPONENT_SWIZZLE_IDENTITY;
+		imageViewInfo.components.a					  = VK_COMPONENT_SWIZZLE_IDENTITY;
+		imageViewInfo.subresourceRange.aspectMask	  = VK_IMAGE_ASPECT_COLOR_BIT;
+		imageViewInfo.subresourceRange.baseMipLevel	  = 0;
+		imageViewInfo.subresourceRange.levelCount	  = 1;
+		imageViewInfo.subresourceRange.baseArrayLayer = 0;
+		imageViewInfo.subresourceRange.layerCount	  = 1;
+
+		VkImageView* pImageView = CU_ARRAY_GET(VkImageView, pVulkanWindow->pSwapchainImageViews, imageIndex);
+
+		VK_ASSERT(vkCreateImageView(gCuVulkanContext.device, &imageViewInfo, CU_NULL, pImageView));
+	}
+	CU_LOG_DEBUG("Vulkan swapchain image views created successfully.");
+	cuReleaseStackPush(g_pReleaseStack, destroySwapchainImageViews, pVulkanWindow);
+}
+
+static void destroySwapchainImageViews(void* pUserData)
+{
+	CuVulkanWindow* pVulkanWindow = (CuVulkanWindow*)pUserData;
+	CU_ASSERT(pVulkanWindow != CU_NULL);
+	CU_ASSERT(pVulkanWindow->pSwapchainImageViews != CU_NULL);
+	CU_ASSERT(gCuVulkanContext.device != VK_NULL_HANDLE);
+
+	u32 imageViewsCount = pVulkanWindow->pSwapchainImageViews->count;
+
+	for (u32 imageViewIndex = 0; imageViewIndex < imageViewsCount; ++imageViewIndex)
+	{
+		VkImageView* pView = CU_ARRAY_GET(VkImageView, pVulkanWindow->pSwapchainImageViews, imageViewIndex);
+		vkDestroyImageView(gCuVulkanContext.device, *pView, CU_NULL);
+	}
+
+	CU_ARRAY_DELETE(VkImageView, pVulkanWindow->pSwapchainImageViews);
+	pVulkanWindow->pSwapchainImageViews = CU_NULL;
+	CU_LOG_DEBUG("Vulkan swapchain image views destroyed successfully.");
 }
 
 #endif // CU_USE_VULKAN

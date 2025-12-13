@@ -24,7 +24,8 @@ typedef struct CuVulkanWindow
 
 	VkSwapchainKHR swapchain; ///< The Vulkan swapchain for the window
 
-	CuArray* pSwapchainImages; ///< Array of VkImage handles for the swapchain images
+	CuArray* pSwapchainImages;	   ///< Array of VkImage handles for the swapchain images
+	CuArray* pSwapchainImageViews; ///< Array of VkImageView handles for the swapchain images
 } CuVulkanWindow;
 
 typedef struct CuVulkanContext
