@@ -55,6 +55,11 @@ if (CU_PLATFORM_UNIX)
     list(APPEND CU_LINK_LIBS dl m pthread X11)
 endif()
 
+if (CU_USE_VULKAN)
+    CU_FindPackage(cu-vulkan "Dependencies")
+    list(APPEND CU_LINK_LIBS cu-vulkan)
+endif()
+
 set(STATIC_PROJECT_NAME "${PROJECT_NAME}-static")
 if (CU_BUILD_STATIC)
     add_library(

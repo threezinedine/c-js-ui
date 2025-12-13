@@ -56,6 +56,11 @@
 					"name": "window",
 					"linuxPath": "{{ BUILD_DIR }}/examples/platforms/window",
 					"windowsPath": "{{ BUILD_DIR }}/examples/platforms/{{ BUILD_TYPE|capitalize }}/window.exe"
+				},
+				{
+					"name": "render",
+					"linuxPath": "{{ BUILD_DIR }}/examples/modules/render",
+					"windowsPath": "{{ BUILD_DIR }}/examples/modules/{{ BUILD_TYPE|capitalize }}/render.exe"
 				}
 			]
 		}

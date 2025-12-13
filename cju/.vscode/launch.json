@@ -17,20 +17,28 @@
 			"cwd": "${workspaceRoot}/build/linux/debug/examples/core"
 		},
 		{
-			"name": "Test: CJU",
-			"type": "cppdbg",
-			"request": "launch",
-			"preLaunchTask": "Build",
-			"program": "${workspaceRoot}/build/linux/debug/tests/CJUTests",
-			"cwd": "${workspaceRoot}/build/linux/debug/tests"
-		},
-		{
 			"name": "Example: Window",
 			"type": "cppdbg",
 			"request": "launch",
 			"preLaunchTask": "Build",
 			"program": "${workspaceRoot}/build/linux/debug/examples/platforms/window",
 			"cwd": "${workspaceRoot}/build/linux/debug/examples/platforms"
+		},
+		{
+			"name": "Example: Render",
+			"type": "cppdbg",
+			"request": "launch",
+			"preLaunchTask": "Build",
+			"program": "${workspaceRoot}/build/linux/debug/examples/modules/render",
+			"cwd": "${workspaceRoot}/build/linux/debug/examples/modules"
+		},
+		{
+			"name": "Test: CJU",
+			"type": "cppdbg",
+			"request": "launch",
+			"preLaunchTask": "Build",
+			"program": "${workspaceRoot}/build/linux/debug/tests/CJUTests",
+			"cwd": "${workspaceRoot}/build/linux/debug/tests"
 		}
 	]
 }

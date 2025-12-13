@@ -33,5 +33,5 @@ void cuConsoleLoggerLog(const CuLoggerRecord* pRecord)
 		break;
 	}
 
-	cuPrintLnFormat("[%7s] [%7s] %s (%s:%u)", "SIMUI", levelStr, pRecord->message, pRecord->file, pRecord->line);
+	cuPrintLnFormat("[%7s] - [%7s] - %s (%s:%u)", "SIMUI", levelStr, pRecord->message, pRecord->file, pRecord->line);
 }

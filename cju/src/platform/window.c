@@ -110,13 +110,13 @@ void cuWindowDestroy_default(CuWindow* pWindow)
 	CU_ASSERT(pWindow != CU_NULL);
 
 #if CU_PLATFORM_UNIX
-	CuLinuxWindow* pLinuxWindow = (CuLinuxWindow*)pWindow->pPlatformData;
-	CU_ASSERT(pLinuxWindow != CU_NULL);
-	CU_PLATFORM_API(cuFree)(pLinuxWindow, sizeof(CuLinuxWindow));
-
 	CU_ASSERT(g_pDisplay != CU_NULL);
 
-	// XDestroyWindow(g_pDisplay, pLinuxWindow->window);
+	CuLinuxWindow* pLinuxWindow = (CuLinuxWindow*)pWindow->pPlatformData;
+	CU_ASSERT(pLinuxWindow != CU_NULL);
+	XDestroyWindow(g_pDisplay, pLinuxWindow->window);
+
+	CU_PLATFORM_API(cuFree)(pLinuxWindow, sizeof(CuLinuxWindow));
 #endif
 
 	CU_PLATFORM_API(cuFree)(pWindow, sizeof(CuWindow));

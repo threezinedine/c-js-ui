@@ -3,7 +3,12 @@
 		{
 			"name": "Linux",
 			"includePath": ["${workspaceFolder}/**"],
-			"defines": ["CU_PLATFORM_UNIX=1", "CU_DEBUG=1"],
+			"defines": [
+				"CU_PLATFORM_UNIX=1",
+				"CU_DEBUG=1",
+				"CU_USE_VULKAN=1",
+				"CU_USE_OPENGL=0"
+			],
 			"compilerPath": "/usr/bin/clang",
 			"cStandard": "c17",
 			"cppStandard": "c++17",

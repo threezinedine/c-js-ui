@@ -40,6 +40,23 @@ macro(CU_PlatformDetection)
     endif()
 endmacro()
 
+macro(CU_RenderAPISetup)
+    CU_Option(CU_USE_OPENGL   OFF)
+    CU_Option(CU_USE_VULKAN   ON)
+
+    if (CU_USE_OPENGL AND CU_USE_VULKAN)
+        message(FATAL_ERROR "Only one render API can be enabled at a time.")
+    elseif (CU_USE_OPENGL)
+        list(APPEND COMMON_DEFINITIONS CU_USE_OPENGL=1)
+        message(STATUS "Using OpenGL as the render API.")
+    elseif (CU_USE_VULKAN)
+        list(APPEND COMMON_DEFINITIONS CU_USE_VULKAN=1)
+        message(STATUS "Using Vulkan as the render API.")
+    else()
+        message(FATAL_ERROR "At least one render API must be enabled.")
+    endif()
+endmacro()
+
 
 macro(CU_Setup CMAKE_PATH)
     set(COMMON_DEFINITIONS "")
@@ -74,6 +91,8 @@ macro(CU_Setup CMAKE_PATH)
     else()
         message(STATUS "CU Build Type: Release")
     endif()
+
+    CU_RenderAPISetup()
 
     message(STATUS "Definitions:")
     foreach(DEF ${COMMON_DEFINITIONS})
