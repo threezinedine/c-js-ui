@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#if CU_DEBUG
 static void* _malloc(u32 size);
 static void	 _free(void* ptr, u32 size);
 
@@ -24,9 +25,9 @@ struct TraceInfo
 	void* backtracePtrs[MAX_BACKTRACE_DEPTH]; ///< Array to hold backtrace pointers
 	u32	  traceCount;						  ///< Number of valid entries in backtracePtrs
 };
-#else
+#else // CU_PLATFORM_WINDOWS
 #error "Platform not supported"
-#endif
+#endif // CU_PLATFORM_WINDOWS
 
 /**
  * Structure to track allocated memory blocks for leak detection.
@@ -46,8 +47,11 @@ typedef struct MemoryBlock
 static u32 gTotalAllocatedMemoryBytes = 0;
 
 static MemoryBlock* gMemoryBlocksHead = CU_NULL;
-void*				cuAllocate(u32 size)
+#endif // CU_DEBUG
+
+void* cuAllocate(u32 size)
 {
+#if CU_DEBUG
 	MemoryBlock* pBlock = (MemoryBlock*)_malloc(sizeof(MemoryBlock));
 	memset(pBlock, 0, sizeof(MemoryBlock));
 
@@ -60,10 +64,14 @@ void*				cuAllocate(u32 size)
 	cuGetCurrentTrace(&pBlock->traceInfo);
 
 	return pBlock->address;
+#else
+	return malloc(size);
+#endif
 }
 
 void cuFree(void* ptr, u32 size)
 {
+#if CU_DEBUG
 	MemoryBlock* pBlock			= gMemoryBlocksHead;
 	MemoryBlock* pPreviousBlock = CU_NULL;
 
@@ -95,6 +103,9 @@ void cuFree(void* ptr, u32 size)
 
 	_free(ptr, size);
 	_free(pBlock, sizeof(MemoryBlock));
+#else
+	free(ptr);
+#endif
 }
 
 void cuMemorySet(void* dest, u8 value, u32 size)
@@ -109,6 +120,7 @@ void cuMemoryCopy(void* dest, const void* src, u32 size)
 
 void cuMemoryAssertNoLeaks()
 {
+#if CU_DEBUG
 	if (gMemoryBlocksHead != CU_NULL)
 	{
 		cuConsoleSetColor(CU_CONSOLE_COLOR_RED);
@@ -124,8 +136,10 @@ void cuMemoryAssertNoLeaks()
 
 	CU_ASSERT_MSG(
 		gTotalAllocatedMemoryBytes == 0, "Total allocated memory bytes is %u, expected 0", gTotalAllocatedMemoryBytes);
+#endif
 }
 
+#if CU_DEBUG
 static void* _malloc(u32 size)
 {
 	void* ptr = malloc(size);
@@ -146,9 +160,9 @@ void cuGetCurrentTrace(TraceInfo* pOutTraceInfo)
 #elif CU_PLATFORM_UNIX || CU_PLATFORM_WEB
 	u32 traceCount			  = backtrace(pOutTraceInfo->backtracePtrs, MAX_BACKTRACE_DEPTH);
 	pOutTraceInfo->traceCount = traceCount;
-#else
+#else // CU_PLATFORM_WINDOWS
 #error "Platform not supported"
-#endif
+#endif // CU_PLATFORM_WINDOWS
 }
 
 #if CU_PLATFORM_UNIX || CU_PLATFORM_WEB
@@ -166,9 +180,9 @@ void cuPrintTrace(const TraceInfo* pTraceInfo)
 		backtrace_pcinfo(pState, (size_t)(pTraceInfo->backtracePtrs[i]), fullBacktrace, NULL, NULL);
 	}
 	debugbreak();
-#else
+#else // CU_PLATFORM_WINDOWS
 #error "Platform not supported"
-#endif
+#endif // CU_PLATFORM_WINDOWS
 }
 
 #if CU_PLATFORM_UNIX || CU_PLATFORM_WEB
@@ -195,4 +209,5 @@ static int fullBacktrace(void* data, uintptr_t pc, const char* filename, int lin
 		cuPrintFormat(" at <unknown>:%d\n", lineno);
 	}
 }
-#endif
+#endif // CU_PLATFORM_UNIX || CU_PLATFORM_WEB
+#endif // CU_DEBUG

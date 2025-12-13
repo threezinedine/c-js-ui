@@ -25,6 +25,14 @@ target_include_directories(
     "${CMAKE_CURRENT_SOURCE_DIR}"
 )
 
+if (CU_DEBUG)
+    target_compile_definitions(
+        ${PROJECT_NAME}
+        PRIVATE
+        CU_DEBUG
+    )
+endif()
+
 CU_FindPackage(cu-googletest "Dependencies")
 
 target_link_libraries(

@@ -16,6 +16,9 @@
 			"buildTypesConfig": {
 				"debug": {
 					"options": "-DCU_BUILD_EXAMPLES=ON -DCU_BUILD_SHARED=OFF -DCU_BUILD_STATIC=ON -DCU_BUILD_TESTS=ON"
+				},
+				"release": {
+					"options": "-DCU_BUILD_EXAMPLES=ON -DCU_BUILD_SHARED=OFF -DCU_BUILD_STATIC=ON -DCU_BUILD_TESTS=ON"
 				}
 			},
 			"executables": [

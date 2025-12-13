@@ -112,6 +112,7 @@ TEST(ListTest, GetAtOutOfBounds)
 	CU_LIST_DELETE(int, pList);
 }
 
+#if CU_DEBUG
 TEST(ListTest, DoSomethingWithDifferentType)
 {
 	CuList* pList = CU_LIST_CREATE(double);
@@ -122,6 +123,7 @@ TEST(ListTest, DoSomethingWithDifferentType)
 
 	CU_LIST_DELETE(double, pList);
 }
+#endif // CU_DEBUG
 
 TEST(ListTest, InsertAfterNode)
 {

@@ -51,6 +51,7 @@ void cuMemoryCopy(void* dest, const void* src, u32 size);
  */
 void cuMemoryAssertNoLeaks();
 
+#if CU_DEBUG
 /**
  * Retrieves the current trace information.
  *
@@ -72,3 +73,4 @@ void cuPrintTrace(const TraceInfo* pTraceInfo);
 		cuGetCurrentTrace(&traceInfo);                                                                                 \
 		cuPrintTrace(&traceInfo);                                                                                      \
 	} while (CU_FALSE)
+#endif

@@ -66,6 +66,7 @@ TEST(ArrayTest, GetIndexOutOfBounds)
 	CU_ARRAY_DELETE(int, pArray);
 }
 
+#if CU_DEBUG
 TEST(ArrayTest, DoSomethingWithDifferentType)
 {
 	CuArray* pArray = CU_ARRAY_CREATE(double, 3);
@@ -75,6 +76,7 @@ TEST(ArrayTest, DoSomethingWithDifferentType)
 
 	CU_ARRAY_DELETE(double, pArray);
 }
+#endif // CU_DEBUG
 
 TEST(ArrayTest, PushIndexOutOfCapacity)
 {

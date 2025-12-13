@@ -65,7 +65,7 @@ void debugbreak();
 	} while (CU_FALSE)
 #else
 #define CU_ASSERT(cond)
-#define CU_ASSERT_MSG(cond, msg)
+#define CU_ASSERT_MSG(cond, msg, ...)
 #define CU_UNREACHABLE()
 #endif
 
