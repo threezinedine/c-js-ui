@@ -19,6 +19,7 @@ static void createLogicalDevice();
 // ======================== Windows helper functions =======================
 static void createSurface(CuVulkanWindow* pVulkanWindow);
 static void createSwapchain(CuVulkanWindow* pVulkanWindow);
+static void getSwapchainImages(CuVulkanWindow* pVulkanWindow);
 
 #if CU_DEBUG
 static void createDebugMessenger();
@@ -67,6 +68,7 @@ void cuRendererInitialize()
 		createLogicalDevice();
 
 		createSwapchain(g_pMainWindow);
+		getSwapchainImages(g_pMainWindow);
 	}
 }
 
@@ -595,6 +597,36 @@ static i32 getMinImageCountForSwapchain(const VkSurfaceCapabilitiesKHR* pSurface
 	}
 
 	return minImageCount;
+}
+
+static void freeSwapchainImages(void* pUserData);
+static void getSwapchainImages(CuVulkanWindow* pVulkanWindow)
+{
+	CU_ASSERT(gCuVulkanContext.device != VK_NULL_HANDLE);
+	CU_ASSERT(pVulkanWindow != CU_NULL);
+
+	u32 swapchainImagesCount = 0;
+	VK_ASSERT(
+		vkGetSwapchainImagesKHR(gCuVulkanContext.device, pVulkanWindow->swapchain, &swapchainImagesCount, CU_NULL));
+
+	pVulkanWindow->pSwapchainImages = CU_ARRAY_CREATE(VkImage, swapchainImagesCount);
+
+	VK_ASSERT(vkGetSwapchainImagesKHR(gCuVulkanContext.device,
+									  pVulkanWindow->swapchain,
+									  &swapchainImagesCount,
+									  (VkImage*)pVulkanWindow->pSwapchainImages->pData));
+	CU_LOG_DEBUG("Vulkan swapchain images retrieved successfully.");
+	cuReleaseStackPush(g_pReleaseStack, freeSwapchainImages, pVulkanWindow);
+}
+
+static void freeSwapchainImages(void* pUserData)
+{
+	CuVulkanWindow* pVulkanWindow = (CuVulkanWindow*)pUserData;
+	CU_ASSERT(pVulkanWindow != CU_NULL);
+	CU_ASSERT(pVulkanWindow->pSwapchainImages != CU_NULL);
+
+	CU_ARRAY_DELETE(VkImage, pVulkanWindow->pSwapchainImages);
+	pVulkanWindow->pSwapchainImages = CU_NULL;
 }
 
 #endif // CU_USE_VULKAN

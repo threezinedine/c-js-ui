@@ -23,6 +23,8 @@ typedef struct CuVulkanWindow
 	u32				   imageCount;	  ///< The number of images in the swapchain
 
 	VkSwapchainKHR swapchain; ///< The Vulkan swapchain for the window
+
+	CuArray* pSwapchainImages; ///< Array of VkImage handles for the swapchain images
 } CuVulkanWindow;
 
 typedef struct CuVulkanContext
