@@ -3,14 +3,19 @@
 #include "cju/modules/release_stack.h"
 #include "common.h"
 
-static CuWindow*	   g_pMainWindow	= CU_NULL; /// currently has only one window support
 static CuReleaseStack* g_pReleaseStack	= CU_NULL;
-CuVulkanContext		   gCuVulkanContext = {}; /// the global vulkan context
+CuVulkanContext		   gCuVulkanContext = {};	   /// the global vulkan context
+static CuVulkanWindow* g_pMainWindow	= CU_NULL; ///< current support 1 window TODO: multiple windows later
 
 // ======================== Vulkan Helper Functions ========================
 static void assertRequiredVulkanExtensions();
 static void assertRequiredVulkanLayers();
 static void createVulkanInstance();
+static void choosePhysicalDevice();
+static void createMainVulkanSurface();
+static void chooseGraphicsQueueFamily();
+static void choosePresentQueueFamily();
+static void createLogicalDevice();
 
 #if CU_DEBUG
 static void createDebugMessenger();
@@ -34,7 +39,10 @@ void cuRendererInitialize()
 
 	CU_PLATFORM_API(cuWindowInitialize)();
 
-	g_pMainWindow = CU_PLATFORM_API(cuWindowCreate)(800, 600, "C-JS-UI Renderer Window");
+	g_pMainWindow = CU_PLATFORM_API(cuAllocate)(sizeof(CuVulkanWindow));
+	CU_ASSERT(g_pMainWindow != CU_NULL);
+
+	g_pMainWindow->pWindow = CU_PLATFORM_API(cuWindowCreate)(800, 600, "C-JS-UI Renderer Window");
 
 	cuReleaseStackPush(g_pReleaseStack, shutdownWindow, CU_NULL);
 
@@ -48,17 +56,23 @@ void cuRendererInitialize()
 #if CU_DEBUG
 		createDebugMessenger();
 #endif // CU_DEBUG
+
+		choosePhysicalDevice();
+		createMainVulkanSurface();
+		chooseGraphicsQueueFamily();
+		choosePresentQueueFamily();
+		createLogicalDevice();
 	}
 }
 
 b8 cuRendererShouldClose()
 {
-	return !g_pMainWindow->isRunning;
+	return !g_pMainWindow->pWindow->isRunning;
 }
 
 void cuRendererBeginFrame()
 {
-	CU_PLATFORM_API(cuWindowPollEvents)(g_pMainWindow);
+	CU_PLATFORM_API(cuWindowPollEvents)(g_pMainWindow->pWindow);
 }
 
 void cuRendererEndFrame()
@@ -124,7 +138,10 @@ static void shutdownWindow(void* pUserData)
 {
 	CU_UNUSED(pUserData);
 
-	CU_PLATFORM_API(cuWindowDestroy)(g_pMainWindow);
+	CU_PLATFORM_API(cuWindowDestroy)(g_pMainWindow->pWindow);
+	g_pMainWindow->pWindow = CU_NULL;
+
+	CU_PLATFORM_API(cuFree)(g_pMainWindow, sizeof(CuVulkanWindow));
 	g_pMainWindow = CU_NULL;
 
 	CU_PLATFORM_API(cuWindowShutdown)();
@@ -263,6 +280,203 @@ static void assertRequiredVulkanLayers()
 	}
 
 	CU_PLATFORM_API(cuFree)(pAvailableLayers, sizeof(VkLayerProperties) * layersCount);
+}
+
+static u32 getPhysicalDeviceScore(VkPhysicalDevice physicalDevice);
+
+static void choosePhysicalDevice()
+{
+	CU_ASSERT(gCuVulkanContext.instance != VK_NULL_HANDLE);
+	CU_ASSERT(gCuVulkanContext.physicalDevice == VK_NULL_HANDLE);
+
+	u32 physicalDevicesCount = 0;
+	VK_ASSERT(vkEnumeratePhysicalDevices(gCuVulkanContext.instance, &physicalDevicesCount, CU_NULL));
+
+	VkPhysicalDevice* physicalDevices =
+		(VkPhysicalDevice*)CU_PLATFORM_API(cuAllocate)(sizeof(VkPhysicalDevice) * physicalDevicesCount);
+	VK_ASSERT(vkEnumeratePhysicalDevices(gCuVulkanContext.instance, &physicalDevicesCount, physicalDevices));
+
+	i32 bestDeviceIndex = -1;
+	u32 bestDeviceScore = 0;
+
+	for (i32 deviceIndex = 0; deviceIndex < physicalDevicesCount; ++deviceIndex)
+	{
+		u32 deviceScore = getPhysicalDeviceScore(physicalDevices[deviceIndex]);
+
+		if (deviceScore > bestDeviceScore)
+		{
+			bestDeviceScore = deviceScore;
+			bestDeviceIndex = deviceIndex;
+		}
+	}
+
+	CU_ASSERT_MSG(bestDeviceIndex != -1, "Failed to find a suitable Vulkan physical device.");
+	CU_ASSERT_MSG(bestDeviceScore > 0, "Failed to find a suitable Vulkan physical device.");
+	gCuVulkanContext.physicalDevice = physicalDevices[bestDeviceIndex];
+
+	CU_PLATFORM_API(cuFree)(physicalDevices, sizeof(VkPhysicalDevice) * physicalDevicesCount);
+}
+
+static u32 getPhysicalDeviceScore(VkPhysicalDevice physicalDevice)
+{
+	VkPhysicalDeviceProperties properties;
+	vkGetPhysicalDeviceProperties(physicalDevice, &properties);
+
+	u32 finalScore = 0;
+
+	if (properties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU)
+	{
+		finalScore += 100;
+	}
+	else if (properties.deviceType == VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU)
+	{
+		finalScore += 50;
+	}
+	else
+	{
+		return 0; // Other device types are not suitable
+	}
+
+	finalScore += properties.limits.maxImageDimension2D;
+
+	return finalScore;
+}
+
+static void chooseGraphicsQueueFamily()
+{
+	CU_ASSERT(gCuVulkanContext.instance != VK_NULL_HANDLE);
+	CU_ASSERT(gCuVulkanContext.physicalDevice != VK_NULL_HANDLE);
+
+	u32 queueFamiliesCount = 0;
+	vkGetPhysicalDeviceQueueFamilyProperties(gCuVulkanContext.physicalDevice, &queueFamiliesCount, CU_NULL);
+
+	VkQueueFamilyProperties* queueFamiliesProperties =
+		(VkQueueFamilyProperties*)CU_PLATFORM_API(cuAllocate)(sizeof(VkQueueFamilyProperties) * queueFamiliesCount);
+
+	for (u32 queueFamilyIndex = 0; queueFamilyIndex < queueFamiliesCount; ++queueFamilyIndex)
+	{
+		VkQueueFamilyProperties properties = queueFamiliesProperties[queueFamilyIndex];
+
+		if (properties.queueFlags & VK_QUEUE_GRAPHICS_BIT)
+		{
+			gCuVulkanContext.graphicsFamily.familyFound = CU_TRUE;
+			gCuVulkanContext.graphicsFamily.familyIndex = queueFamilyIndex;
+			break;
+		}
+	}
+
+	CU_PLATFORM_API(cuFree)(queueFamiliesProperties, sizeof(VkQueueFamilyProperties) * queueFamiliesCount);
+}
+
+static void destroyMainVulkanSurface(void* pUserData);
+static void createMainVulkanSurface()
+{
+	CU_ASSERT(gCuVulkanContext.instance != VK_NULL_HANDLE);
+	CU_ASSERT(g_pMainWindow != CU_NULL);
+
+	g_pMainWindow->surface =
+		CU_PLATFORM_API(cuWindowCreateVulkanSurface)(g_pMainWindow->pWindow, gCuVulkanContext.instance);
+	CU_LOG_DEBUG("Vulkan surface for main window created successfully.");
+	cuReleaseStackPush(g_pReleaseStack, destroyMainVulkanSurface, CU_NULL);
+}
+
+static void destroyMainVulkanSurface(void* pUserData)
+{
+	CU_UNUSED(pUserData);
+	CU_ASSERT(gCuVulkanContext.instance != VK_NULL_HANDLE);
+	CU_ASSERT(g_pMainWindow != CU_NULL);
+	CU_ASSERT(g_pMainWindow->surface != VK_NULL_HANDLE);
+
+	CU_PLATFORM_API(cuWindowDestroyVulkanSurface)
+	(g_pMainWindow->pWindow, gCuVulkanContext.instance, g_pMainWindow->surface);
+
+	g_pMainWindow->surface = VK_NULL_HANDLE;
+
+	CU_LOG_DEBUG("Vulkan surface for main window destroyed successfully.");
+}
+
+static void choosePresentQueueFamily()
+{
+	CU_ASSERT(gCuVulkanContext.instance != VK_NULL_HANDLE);
+	CU_ASSERT(gCuVulkanContext.physicalDevice != VK_NULL_HANDLE);
+	CU_ASSERT(g_pMainWindow != CU_NULL);
+
+	u32 queueFamilyIndicesCount = 0;
+	vkGetPhysicalDeviceQueueFamilyProperties(gCuVulkanContext.physicalDevice, &queueFamilyIndicesCount, CU_NULL);
+
+	VkQueueFamilyProperties* queueFamiliesProperties = (VkQueueFamilyProperties*)CU_PLATFORM_API(cuAllocate)(
+		sizeof(VkQueueFamilyProperties) * queueFamilyIndicesCount);
+	vkGetPhysicalDeviceQueueFamilyProperties(
+		gCuVulkanContext.physicalDevice, &queueFamilyIndicesCount, queueFamiliesProperties);
+
+	for (u32 queueFamilyIndex = 0; queueFamilyIndex < queueFamilyIndicesCount; ++queueFamilyIndex)
+	{
+		VkBool32 presentSupport = VK_FALSE;
+		VK_ASSERT(vkGetPhysicalDeviceSurfaceSupportKHR(
+			gCuVulkanContext.physicalDevice, queueFamilyIndex, g_pMainWindow->surface, &presentSupport));
+
+		if (presentSupport)
+		{
+			gCuVulkanContext.presentFamily.familyFound = CU_TRUE;
+			gCuVulkanContext.presentFamily.familyIndex = queueFamilyIndex;
+			break;
+		}
+	}
+
+	CU_PLATFORM_API(cuFree)(queueFamiliesProperties, sizeof(VkQueueFamilyProperties) * queueFamilyIndicesCount);
+}
+
+static void destroyLogicalDevice(void* pUserData);
+static void createLogicalDevice()
+{
+	CU_ASSERT(gCuVulkanContext.physicalDevice != VK_NULL_HANDLE);
+	CU_ASSERT(gCuVulkanContext.device == VK_NULL_HANDLE);
+	CU_ASSERT(gCuVulkanContext.graphicsFamily.familyFound == CU_TRUE);
+	CU_ASSERT(gCuVulkanContext.presentFamily.familyFound == CU_TRUE);
+
+	u32						numberQueueCreateInfos = 0;
+	VkDeviceQueueCreateInfo queueCreateInfos[2]	   = {};
+	float					queuePriority		   = 1.0f;
+
+	queueCreateInfos[0].sType			 = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+	queueCreateInfos[0].pNext			 = CU_NULL;
+	queueCreateInfos[0].queueFamilyIndex = gCuVulkanContext.graphicsFamily.familyIndex;
+	queueCreateInfos[0].queueCount		 = 1;
+	queueCreateInfos[0].pQueuePriorities = &queuePriority;
+	numberQueueCreateInfos++;
+
+	if (gCuVulkanContext.presentFamily.familyIndex != gCuVulkanContext.graphicsFamily.familyIndex)
+	{
+		queueCreateInfos[1].sType			 = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+		queueCreateInfos[1].pNext			 = CU_NULL;
+		queueCreateInfos[1].queueFamilyIndex = gCuVulkanContext.presentFamily.familyIndex;
+		queueCreateInfos[1].queueCount		 = 1;
+		queueCreateInfos[1].pQueuePriorities = &queuePriority;
+		numberQueueCreateInfos++;
+	}
+
+	VkDeviceCreateInfo deviceCreateInfo		 = {};
+	deviceCreateInfo.sType					 = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+	deviceCreateInfo.pNext					 = CU_NULL;
+	deviceCreateInfo.enabledExtensionCount	 = CU_ARRAY_SIZE(gVulkanDeviceExtensions);
+	deviceCreateInfo.ppEnabledExtensionNames = gVulkanDeviceExtensions;
+	deviceCreateInfo.queueCreateInfoCount	 = numberQueueCreateInfos;
+	deviceCreateInfo.pQueueCreateInfos		 = queueCreateInfos;
+
+	VK_ASSERT(vkCreateDevice(gCuVulkanContext.physicalDevice, &deviceCreateInfo, CU_NULL, &gCuVulkanContext.device));
+	CU_LOG_DEBUG("Vulkan logical device created successfully.");
+	cuReleaseStackPush(g_pReleaseStack, destroyLogicalDevice, CU_NULL);
+}
+
+static void destroyLogicalDevice(void* pUserData)
+{
+	CU_UNUSED(pUserData);
+	CU_ASSERT(gCuVulkanContext.device != VK_NULL_HANDLE);
+
+	vkDestroyDevice(gCuVulkanContext.device, CU_NULL);
+	gCuVulkanContext.device = VK_NULL_HANDLE;
+
+	CU_LOG_DEBUG("Vulkan logical device destroyed successfully.");
 }
 
 #endif // CU_USE_VULKAN

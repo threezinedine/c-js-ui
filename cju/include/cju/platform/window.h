@@ -45,6 +45,27 @@ typedef struct CuWindowEvent
 	// Future event data can be added here
 } CuWindowEvent;
 
+#if CU_USE_VULKAN
+#include <vulkan/vulkan.h>
+
+/**
+ * Create a Vulkan surface for the specified window and Vulkan instance.
+ * @param pWindow A pointer to the CuWindow instance.
+ * @param instance The Vulkan instance.
+ * @return The created VkSurfaceKHR.
+ */
+CU_PLATFORM_API_DEFINE(VkSurfaceKHR, cuWindowCreateVulkanSurface, CuWindow* pWindow, VkInstance instance);
+
+/**
+ * Destroy the Vulkan surface associated with the specified window and Vulkan instance.
+ * @param pWindow A pointer to the CuWindow instance.
+ * @param instance The Vulkan instance.
+ * @param surface The Vulkan surface to be destroyed.
+ */
+CU_PLATFORM_API_DEFINE(
+	void, cuWindowDestroyVulkanSurface, CuWindow* pWindow, VkInstance instance, VkSurfaceKHR surface);
+#endif // CU_USE_VULKAN
+
 /**
  * Poll for window events (e.g., input, close events).
  * @param window A pointer to the CuWindow instance.

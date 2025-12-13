@@ -6,6 +6,11 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 
+#if CU_USE_VULKAN
+#include <vulkan/vulkan.h>
+#include <vulkan/vulkan_xlib.h>
+#endif // CU_USE_VULKAN
+
 static Display* g_pDisplay	 = CU_NULL;
 static i32		g_screen	 = 0;
 static Window	g_rootWindow = 0;
@@ -104,6 +109,46 @@ CuWindowEvent cuWindowPollEvents_default(CuWindow* pWindow)
 
 	return event;
 }
+
+#if CU_USE_VULKAN
+VkSurfaceKHR cuWindowCreateVulkanSurface_default(CuWindow* pWindow, VkInstance instance)
+{
+	CU_ASSERT(pWindow != CU_NULL);
+	CU_ASSERT(instance != VK_NULL_HANDLE);
+
+	VkSurfaceKHR surface = VK_NULL_HANDLE;
+
+#if CU_PLATFORM_UNIX
+	CU_ASSERT(g_pDisplay != CU_NULL);
+
+	CuLinuxWindow* pLinuxWindow = (CuLinuxWindow*)pWindow->pPlatformData;
+	CU_ASSERT(pLinuxWindow != CU_NULL);
+
+	VkXlibSurfaceCreateInfoKHR surfaceCreateInfo = {};
+	surfaceCreateInfo.sType						 = VK_STRUCTURE_TYPE_XLIB_SURFACE_CREATE_INFO_KHR;
+	surfaceCreateInfo.pNext						 = CU_NULL;
+	surfaceCreateInfo.flags						 = 0;
+	surfaceCreateInfo.dpy						 = g_pDisplay;
+	surfaceCreateInfo.window					 = pLinuxWindow->window;
+
+	VkResult result = vkCreateXlibSurfaceKHR(instance, &surfaceCreateInfo, CU_NULL, &surface);
+	CU_ASSERT_MSG(result == VK_SUCCESS, "Failed to create Vulkan Xlib surface. Error code: %d", result);
+#endif // CU_PLATFORM_UNIX
+	return surface;
+}
+
+void cuWindowDestroyVulkanSurface_default(CuWindow* pWindow, VkInstance instance, VkSurfaceKHR surface)
+{
+	CU_ASSERT(pWindow != CU_NULL);
+	CU_ASSERT(instance != VK_NULL_HANDLE);
+	CU_ASSERT(surface != VK_NULL_HANDLE);
+
+#if CU_PLATFORM_UNIX
+	CU_ASSERT(g_pDisplay != CU_NULL);
+	vkDestroySurfaceKHR(instance, surface, CU_NULL);
+#endif // CU_PLATFORM_UNIX
+}
+#endif // CU_USE_VULKAN
 
 void cuWindowDestroy_default(CuWindow* pWindow)
 {

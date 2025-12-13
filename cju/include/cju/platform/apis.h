@@ -35,6 +35,10 @@ typedef struct CuPlatformAPI
 	CU_PLATFORM_API_ATTRIBUTE(cuWindowPollEvents);
 	CU_PLATFORM_API_ATTRIBUTE(cuWindowDestroy);
 	CU_PLATFORM_API_ATTRIBUTE(cuWindowShutdown);
+#if CU_USE_VULKAN
+	CU_PLATFORM_API_ATTRIBUTE(cuWindowCreateVulkanSurface);
+	CU_PLATFORM_API_ATTRIBUTE(cuWindowDestroyVulkanSurface);
+#endif // CU_USE_VULKAN
 } CuPlatformAPI;
 
 extern CuPlatformAPI gCuPlatformAPI;
