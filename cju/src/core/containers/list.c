@@ -6,7 +6,7 @@ CuList* cuListCreate(const char* pTypeName)
 CuList* cuListCreate()
 #endif
 {
-	CuList* pList = (CuList*)cuAllocate(sizeof(CuList));
+	CuList* pList = (CuList*)CU_PLATFORM_API(cuAllocate)(sizeof(CuList));
 	CU_ASSERT(pList != CU_NULL);
 
 	pList->pHead = CU_NULL;
@@ -26,10 +26,10 @@ void cuListAppend(CuList* pList, const void* pData, u32 dataSize)
 	CU_ASSERT(pData != CU_NULL);
 	CU_ASSERT(dataSize > 0);
 
-	CuListNode* pNewNode = (CuListNode*)cuAllocate(sizeof(CuListNode));
+	CuListNode* pNewNode = (CuListNode*)CU_PLATFORM_API(cuAllocate)(sizeof(CuListNode));
 	CU_ASSERT(pNewNode != CU_NULL);
 
-	pNewNode->pData = cuAllocate(dataSize);
+	pNewNode->pData = CU_PLATFORM_API(cuAllocate)(dataSize);
 	CU_ASSERT(pNewNode->pData != CU_NULL);
 
 	cuMemoryCopy(pNewNode->pData, pData, dataSize);
@@ -102,8 +102,8 @@ void cuListRemoveNode(CuList* pList, CuListNode* pNode)
 	}
 
 	CU_ASSERT(pNode->pData != CU_NULL);
-	cuFree(pNode->pData, pNode->dataSize);
-	cuFree(pNode, sizeof(CuListNode));
+	CU_PLATFORM_API(cuFree)(pNode->pData, pNode->dataSize);
+	CU_PLATFORM_API(cuFree)(pNode, sizeof(CuListNode));
 	pList->count--;
 }
 
@@ -114,10 +114,10 @@ void cuListInsertNodeAfter(CuList* pList, CuListNode* pNode, const void* pData, 
 	CU_ASSERT(pData != CU_NULL);
 	CU_ASSERT(dataSize > 0);
 
-	CuListNode* pNewNode = (CuListNode*)cuAllocate(sizeof(CuListNode));
+	CuListNode* pNewNode = (CuListNode*)CU_PLATFORM_API(cuAllocate)(sizeof(CuListNode));
 	CU_ASSERT(pNewNode != CU_NULL);
 
-	pNewNode->pData = cuAllocate(dataSize);
+	pNewNode->pData = CU_PLATFORM_API(cuAllocate)(dataSize);
 	CU_ASSERT(pNewNode->pData != CU_NULL);
 
 	cuMemoryCopy(pNewNode->pData, pData, dataSize);
@@ -145,10 +145,10 @@ void cuListInsertNodeBefore(CuList* pList, CuListNode* pNode, const void* pData,
 	CU_ASSERT(pData != CU_NULL);
 	CU_ASSERT(dataSize > 0);
 
-	CuListNode* pNewNode = (CuListNode*)cuAllocate(sizeof(CuListNode));
+	CuListNode* pNewNode = (CuListNode*)CU_PLATFORM_API(cuAllocate)(sizeof(CuListNode));
 	CU_ASSERT(pNewNode != CU_NULL);
 
-	pNewNode->pData = cuAllocate(dataSize);
+	pNewNode->pData = CU_PLATFORM_API(cuAllocate)(dataSize);
 	CU_ASSERT(pNewNode->pData != CU_NULL);
 
 	cuMemoryCopy(pNewNode->pData, pData, dataSize);
@@ -192,5 +192,5 @@ void cuListDestroy(CuList* pList)
 	CU_ASSERT(pList != CU_NULL);
 
 	cuListClear(pList);
-	cuFree(pList, sizeof(CuList));
+	CU_PLATFORM_API(cuFree)(pList, sizeof(CuList));
 }

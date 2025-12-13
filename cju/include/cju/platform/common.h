@@ -76,6 +76,28 @@ void debugbreak();
 
 #define CU_UNUSED(var) (void)(var)
 
+/**
+ * Macro to declare a platform API function pointer in the CuPlatformAPI structure.
+ * All these functions can be overridden by the user.
+ * @param api The name of the API function.
+ * @param return The return type of the API function.
+ * @param ... The parameter types of the API function.
+ *
+ * @note If wanna add new platform API, you need to use this macro for declaration.
+ * Implement the default version in the respective platform source file (e.g., platform_windows.c).
+ * Update the apis.h file to include the new API in the CuPlatformAPI structure.
+ *
+ * @example
+ * ```C
+ * CU_PLATFORM_API_DEFINE(void*, cuAllocate, u32 size);
+ * // typedef void* (*FPN_cuAllocate)(u32 size);
+ * // extern FPN_cuAllocate cuAllocate_default;
+ * ```
+ */
+#define CU_PLATFORM_API_DEFINE(return, api, ...)                                                                       \
+	typedef return (*FPN_##api)(__VA_ARGS__);                                                                          \
+	return api##_default(__VA_ARGS__);
+
 #include "console.h"
 #include "exeptions.h"
 #include "memory.h"

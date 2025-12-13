@@ -2,9 +2,9 @@
 
 int main()
 {
-	void* ptr = cuAllocate(3);
+	void* ptr = CU_PLATFORM_API(cuAllocate)(3);
 
-	// cuFree(ptr, 3);
+	// CU_PLATFORM_API(cuFree)(ptr, 3);
 
 	cuMemoryAssertNoLeaks();
 

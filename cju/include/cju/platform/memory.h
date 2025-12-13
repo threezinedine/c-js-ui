@@ -17,7 +17,7 @@ typedef struct TraceInfo TraceInfo;
  *
  * @return A pointer to the allocated memory block.
  */
-void* cuAllocate(u32 size);
+CU_PLATFORM_API_DEFINE(void*, cuAllocate, u32 size);
 
 /**
  * Frees a previously allocated block of memory.
@@ -25,7 +25,7 @@ void* cuAllocate(u32 size);
  * @param ptr  A pointer to the memory block to free.
  * @param size The size of the memory block to free in bytes.
  */
-void cuFree(void* ptr, u32 size);
+CU_PLATFORM_API_DEFINE(void, cuFree, void* ptr, u32 size);
 
 /**
  * Sets a block of memory to a specified value.

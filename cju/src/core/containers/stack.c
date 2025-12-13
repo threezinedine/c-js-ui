@@ -6,7 +6,7 @@ CuStack* cuStackCreate(const char* pTypeName)
 CuStack* cuStackCreate()
 #endif // CU_DEBUG
 {
-	CuStack* pStack = (CuStack*)cuAllocate(sizeof(CuStack));
+	CuStack* pStack = (CuStack*)CU_PLATFORM_API(cuAllocate)(sizeof(CuStack));
 	CU_ASSERT(pStack != CU_NULL);
 
 #if CU_DEBUG
@@ -66,5 +66,5 @@ void cuStackDestroy(CuStack* pStack)
 	CU_ASSERT(pStack->pList != CU_NULL);
 
 	cuListDestroy(pStack->pList);
-	cuFree(pStack, sizeof(CuStack));
+	CU_PLATFORM_API(cuFree)(pStack, sizeof(CuStack));
 }

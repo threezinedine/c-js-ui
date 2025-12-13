@@ -49,7 +49,7 @@ static u32 gTotalAllocatedMemoryBytes = 0;
 static MemoryBlock* gMemoryBlocksHead = CU_NULL;
 #endif // CU_DEBUG
 
-void* cuAllocate(u32 size)
+void* cuAllocate_default(u32 size)
 {
 #if CU_DEBUG
 	MemoryBlock* pBlock = (MemoryBlock*)_malloc(sizeof(MemoryBlock));
@@ -69,7 +69,7 @@ void* cuAllocate(u32 size)
 #endif
 }
 
-void cuFree(void* ptr, u32 size)
+void cuFree_default(void* ptr, u32 size)
 {
 #if CU_DEBUG
 	MemoryBlock* pBlock			= gMemoryBlocksHead;

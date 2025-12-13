@@ -6,7 +6,7 @@ CuQueue* cuQueueCreate(const char* pTypeName)
 CuQueue* cuQueueCreate()
 #endif // CU_DEBUG
 {
-	CuQueue* pQueue = (CuQueue*)cuAllocate(sizeof(CuQueue));
+	CuQueue* pQueue = (CuQueue*)CU_PLATFORM_API(cuAllocate)(sizeof(CuQueue));
 	CU_ASSERT(pQueue != CU_NULL);
 
 #if CU_DEBUG
@@ -65,5 +65,5 @@ void cuQueueDestroy(CuQueue* pQueue)
 	CU_ASSERT(pQueue->pList != CU_NULL);
 
 	cuListDestroy(pQueue->pList);
-	cuFree(pQueue, sizeof(CuQueue));
+	CU_PLATFORM_API(cuFree)(pQueue, sizeof(CuQueue));
 }

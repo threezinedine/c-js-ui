@@ -7,6 +7,8 @@ extern "C" {
 #include "common.h"
 #include "time.h"
 
+#include "apis.h"
+
 #if __cplusplus
 }
 #endif
