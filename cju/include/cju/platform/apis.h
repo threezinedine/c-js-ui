@@ -4,6 +4,7 @@
 extern "C" {
 #endif
 #include "common.h"
+#include "file.h"
 #include "window.h"
 
 /**
@@ -39,6 +40,11 @@ typedef struct CuPlatformAPI
 	CU_PLATFORM_API_ATTRIBUTE(cuWindowCreateVulkanSurface);
 	CU_PLATFORM_API_ATTRIBUTE(cuWindowDestroyVulkanSurface);
 #endif // CU_USE_VULKAN
+
+	// file.h
+	CU_PLATFORM_API_ATTRIBUTE(cuFileOpen);
+	CU_PLATFORM_API_ATTRIBUTE(cuFileWrite);
+	CU_PLATFORM_API_ATTRIBUTE(cuFileClose);
 } CuPlatformAPI;
 
 extern CuPlatformAPI gCuPlatformAPI;
