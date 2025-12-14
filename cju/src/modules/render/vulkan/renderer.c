@@ -29,8 +29,9 @@ static void createDebugMessenger();
 // ========================= Remove APIS ========================= //
 static void shutdownWindow();
 
-void cuRendererInitialize()
+void cuGraphicsRendererInitialize_default(const CuRendererContext* pContext)
 {
+	CU_UNUSED(pContext);
 	CuLoggerConfig loggerConfig = {};
 	loggerConfig.minLogLevel	= CU_LOG_LEVEL_DEBUG;
 
@@ -74,26 +75,31 @@ void cuRendererInitialize()
 	}
 }
 
-b8 cuRendererShouldClose()
+b8 cuGraphicsRendererShouldClose_default(const CuRendererContext* pContext)
 {
+	CU_UNUSED(pContext);
 	return !g_pMainWindow->pWindow->isRunning;
 }
 
-void cuRendererBeginFrame()
+void cuGraphicsRendererBeginFrame_default(const CuRendererContext* pContext)
 {
+	CU_UNUSED(pContext);
 	CU_PLATFORM_API(cuWindowPollEvents)(g_pMainWindow->pWindow);
 }
 
-void cuRendererEndFrame()
+void cuGraphicsRendererEndFrame_default(const CuRendererContext* pContext)
 {
+	CU_UNUSED(pContext);
 }
 
-void cuRendererRender()
+void cuGraphicsRendererRender_default(const CuRendererContext* pContext)
 {
+	CU_UNUSED(pContext);
 }
 
-void cuRendererShutdown()
+void cuGraphicsRendererShutdown_default(const CuRendererContext* pContext)
 {
+	CU_UNUSED(pContext);
 	cuReleaseStackExecuteAndDestroy(g_pReleaseStack);
 
 	cuLoggerShutdown();

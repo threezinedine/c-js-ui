@@ -1,4 +1,5 @@
 #pragma once
+#include "graphics_apis.h"
 
 /**
  * @file apis.h
@@ -14,12 +15,18 @@
  * Users can provide their own implementations for these functions to override
  * the default behavior.
  */
-typedef struct CuRenderAPI
+typedef struct CuGraphicsRenderAPI
 {
+	CU_RENDER_API_ATTRIBUTE(cuGraphicsRendererInitialize);
+	CU_RENDER_API_ATTRIBUTE(cuGraphicsRendererShouldClose);
+	CU_RENDER_API_ATTRIBUTE(cuGraphicsRendererBeginFrame);
+	CU_RENDER_API_ATTRIBUTE(cuGraphicsRendererEndFrame);
+	CU_RENDER_API_ATTRIBUTE(cuGraphicsRendererRender);
+	CU_RENDER_API_ATTRIBUTE(cuGraphicsRendererShutdown);
 	// Future rendering API methods can be added here
-} CuRenderAPI;
+} CuGraphicsRenderAPI;
 
-extern CuRenderAPI gCuRenderAPI;
+extern CuGraphicsRenderAPI gCuGraphicsRenderAPI;
 
 /**
  * Macro to set a custom implementation for a rendering API method.
@@ -31,11 +38,11 @@ extern CuRenderAPI gCuRenderAPI;
  * CU_RENDER_API_SET(cuCustomRenderFunction, myCustomRenderFunction);
  * ```
  */
-#define CU_RENDER_API_SET(api, func) (gCuRenderAPI.api = (PFN_##api)func)
+#define CU_RENDER_API_SET(api, func) (gCuGraphicsRenderAPI.api = (PFN_##api)func)
 
 /**
  * Macro to access a rendering API method, using the custom implementation
  * if provided, or falling back to the default implementation otherwise.
  * @param api The name of the rendering API method.
  */
-#define CU_RENDER_API(api) (gCuRenderAPI.api == CU_NULL ? api##_default : gCuRenderAPI.api)
+#define CU_RENDER_API(api) (gCuGraphicsRenderAPI.api == CU_NULL ? api##_default : gCuGraphicsRenderAPI.api)
